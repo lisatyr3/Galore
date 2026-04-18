@@ -1,61 +1,690 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Words Galore</title>
-<style>
-body { margin:0; font-family:Arial; background:#ffe6f6; }
-.wrap { max-width:900px; margin:auto; padding:10px; }
-.grid { display:grid; grid-template-columns:repeat(6,1fr); gap:6px; }
-.tile { aspect-ratio:1; font-size:22px; font-weight:bold; border-radius:10px; border:none; }
-.selected { background:gold; }
-.top { display:flex; justify-content:space-between; font-weight:bold; margin-bottom:10px; }
-.current { text-align:center; font-size:20px; margin:10px 0; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Words Galore</title>
+  <style>
+    :root {
+      --bg-a: #fff6b8;
+      --bg-b: #ffd7ee;
+      --bg-c: #d6f3ff;
+      --ink: #25324a;
+      --card: rgba(255,255,255,0.94);
+      --pink: #ff5fa2;
+      --blue: #49c7f2;
+      --green: #22c878;
+      --purple: #6e7ff2;
+      --gold: #ffbf3f;
+      --bad: #ef476f;
+      --shadow: 0 16px 36px rgba(37,50,74,0.14);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 10% 10%, var(--bg-b), transparent 24%),
+        radial-gradient(circle at 90% 14%, var(--bg-c), transparent 24%),
+        linear-gradient(135deg, #fffbe2, #ffe8f6 50%, #e7f8ff);
+      padding: 18px;
+    }
+
+    .wrap {
+      max-width: 1240px;
+      margin: 0 auto;
+      background: var(--card);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      padding: 24px;
+      border: 1px solid rgba(255,255,255,0.85);
+      backdrop-filter: blur(5px);
+    }
+
+    .hero {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2.6rem, 5vw, 4rem);
+      line-height: 1;
+    }
+
+    .sub { margin: 8px 0 0; font-size: 1.1rem; opacity: 0.82; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(130px, 1fr));
+      gap: 14px;
+      width: 100%;
+    }
+
+    .stat {
+      background: rgba(255,255,255,0.92);
+      border-radius: 22px;
+      padding: 16px 18px;
+      text-align: center;
+      box-shadow: 0 10px 22px rgba(37,50,74,0.08);
+    }
+
+    .stat-label {
+      display: block;
+      font-size: 0.84rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #6d7689;
+      margin-bottom: 6px;
+    }
+
+    .stat-value { display: block; font-size: 2rem; font-weight: 800; }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 22px;
+      align-items: start;
+    }
+
+    .panel {
+      background: rgba(255,255,255,0.92);
+      border-radius: 26px;
+      box-shadow: 0 10px 24px rgba(37,50,74,0.08);
+      padding: 20px;
+    }
+
+    .panel-head {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .head-note { font-size: 1rem; font-weight: 700; max-width: 520px; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 12px;
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    .tile {
+      aspect-ratio: 1 / 1;
+      border: 0;
+      border-radius: 18px;
+      background: linear-gradient(180deg, #ffffff, #eef8ff);
+      color: var(--ink);
+      font-size: clamp(1.45rem, 2.2vw, 2rem);
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 10px 18px rgba(73,199,242,0.16);
+      transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tile:hover { transform: translateY(-2px); }
+
+    .tile.selected {
+      background: linear-gradient(180deg, #ffe797, var(--gold));
+      box-shadow: 0 12px 24px rgba(255,191,63,0.34);
+      transform: scale(1.04);
+    }
+
+    .current-box {
+      margin-top: 16px;
+      background: linear-gradient(90deg, #f9ddf0, #dfefff);
+      border-radius: 20px;
+      min-height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      font-size: 1.7rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-align: center;
+      box-shadow: inset 0 0 0 1px rgba(37,50,74,0.06);
+    }
+
+    .actions { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 12px; }
+
+    .btn {
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 20px;
+      font-size: 1rem;
+      font-weight: 800;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 10px 20px rgba(37,50,74,0.12);
+      transition: transform 0.14s ease, opacity 0.14s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-green { background: linear-gradient(135deg, var(--green), #30db8d); }
+    .btn-purple { background: linear-gradient(135deg, var(--purple), #8895ff); }
+    .btn-blue { background: linear-gradient(135deg, var(--blue), #6ad7fb); }
+    .btn-pink { background: linear-gradient(135deg, var(--pink), #ff84bb); }
+
+    .message { min-height: 28px; margin-top: 12px; font-size: 1rem; font-weight: 800; }
+    .good { color: var(--green); }
+    .bad { color: var(--bad); }
+
+    .word-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 8px;
+      max-height: 520px;
+      overflow: auto;
+    }
+
+    .word-list li {
+      background: linear-gradient(90deg, #fff7d8, #fff);
+      border-radius: 14px;
+      padding: 10px 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      box-shadow: inset 0 0 0 1px rgba(37,50,74,0.05);
+    }
+
+    .help {
+      padding: 14px;
+      border-radius: 18px;
+      background: #f6fbff;
+      line-height: 1.45;
+      font-size: 0.98rem;
+      margin-top: 16px;
+    }
+
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(37,50,74,0.45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .overlay.show { display: flex; }
+
+    .modal {
+      background: #fff;
+      width: min(92vw, 560px);
+      border-radius: 28px;
+      box-shadow: 0 18px 54px rgba(0,0,0,0.18);
+      padding: 28px 24px;
+      text-align: center;
+    }
+
+    .modal h3 { margin: 0 0 12px; font-size: 2.2rem; }
+    .big { font-size: 3rem; font-weight: 900; color: var(--pink); margin: 8px 0 12px; }
+    .modal-line { font-size: 1.14rem; margin: 10px 0; }
+
+    @media (max-width: 980px) {
+      .layout { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 10px; }
+      .wrap { padding: 14px; }
+      .grid { gap: 8px; }
+      .tile { border-radius: 14px; }
+      .current-box { font-size: 1.25rem; min-height: 62px; }
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-<div class="top">
-<div id="time">90</div>
-<div id="words">0</div>
-</div>
-<div class="grid" id="grid"></div>
-<div class="current" id="current"></div>
-</div>
-<script>
-const SIZE=6;
-const TIME=90;
-let board=[],path=[],words=new Set(),time=TIME,active=true;
-const dict=new Set(["one","two","moo","cat","dog","sun","fun","run","hat","map","pen","cup"]);
-function rand(){return "ABCDEFGHIJKLMNOPQRSTUVWXYZ"[Math.floor(Math.random()*26)];}
-function build(){board=Array.from({length:SIZE},()=>Array.from({length:SIZE},rand));}
-function draw(){grid.innerHTML="";
-board.forEach((r,i)=>r.forEach((c,j)=>{
-let b=document.createElement("button");
-b.className="tile"+(path.some(p=>p.i==i&&p.j==j)?" selected":"");
-b.textContent=c;
-b.onpointerdown=()=>{path=[{i,j}];draw();};
-b.onpointerenter=e=>{if(e.buttons){let last=path[path.length-1];
-if(Math.abs(last.i-i)<=1&&Math.abs(last.j-j)<=1&&!path.some(p=>p.i==i&&p.j==j)){
-path.push({i,j});draw();}}};
-b.onpointerup=submit;
-grid.appendChild(b);
-}));
-current.textContent=path.map(p=>board[p.i][p.j]).join("");
-}
-function submit(){let w=current.textContent.toLowerCase();
-if(w.length>=3&&!words.has(w)){
-words.add(w);
-wordsDisplay();}
-path=[];draw();}
-function wordsDisplay(){wordsEl.textContent=words.size;}
-function tick(){if(!active)return;
-time--;timeEl.textContent=time;
-if(time<=0){active=false;alert("You got "+words.size+" words!");}}
-let grid=document.getElementById("grid"),current=document.getElementById("current"),timeEl=document.getElementById("time"),wordsEl=document.getElementById("words");
-build();draw();setInterval(tick,1000);
-</script>
+  <div class="wrap">
+    <div class="hero">
+      <div>
+        <h1>Words Galore</h1>
+        <div class="sub">Find as many words as you can in 90 seconds.</div>
+      </div>
+      <div class="stats">
+        <div class="stat"><span class="stat-label">Time</span><span class="stat-value" id="timeDisplay">1:30</span></div>
+        <div class="stat"><span class="stat-label">Words</span><span class="stat-value" id="wordsDisplay">0</span></div>
+        <div class="stat"><span class="stat-label">Score</span><span class="stat-value" id="scoreDisplay">0</span></div>
+        <div class="stat"><span class="stat-label">Best</span><span class="stat-value" id="bestDisplay">0</span></div>
+      </div>
+    </div>
+
+    <div class="layout">
+      <section class="panel">
+        <div class="panel-head">
+          <div class="head-note">Drag across touching letters to build words. They will submit automatically when you release!</div>
+          <button class="btn btn-pink" id="newGameBtn">New Game</button>
+        </div>
+
+        <div class="grid" id="grid"></div>
+
+        <div class="current-box" id="currentWord">Drag letters to build a word</div>
+
+        <div class="actions">
+          <button class="btn btn-purple" id="clearBtn">Clear Selection</button>
+          <button class="btn btn-blue" id="shuffleBtn">Shuffle Letters</button>
+        </div>
+
+        <div class="message" id="message"></div>
+      </section>
+
+      <aside class="panel side">
+        <h2>Words Found</h2>
+        <ul class="word-list" id="wordList"></ul>
+        <div class="help">
+          <strong>How to play:</strong><br>
+          Select touching letters to make words with 3 or more letters. You can move side to side, up and down, or diagonally. Every round gives you a fresh board.
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay">
+    <div class="modal">
+      <h3>Time’s Up!</h3>
+      <div class="modal-line">You found</div>
+      <div class="big" id="finalWords">0 words</div>
+      <div class="modal-line">Score: <strong id="finalScore">0</strong></div>
+      <div class="modal-line">Better than <strong id="finalPercentile">0%</strong> of today’s players</div>
+      <div class="modal-line">Best game: <strong id="finalBest">0</strong> words</div>
+      <div style="margin-top:18px;"><button class="btn btn-pink" id="playAgainBtn">Play Again</button></div>
+    </div>
+  </div>
+
+  <script>
+    const BOARD_SIZE = 6;
+    const ROUND_SECONDS = 90;
+    const BEST_WORDS_KEY = 'wordsGaloreBestWordsV5';
+    const TODAY_SCORES_KEY = 'wordsGaloreTodayScoresV5';
+    const TODAY_DATE_KEY = 'wordsGaloreTodayDateV5';
+
+    // EXPANDED DICTIONARY (Includes Moo, One, and ~1000 common words)
+    const WORDS = `
+    ace act add ads age ago aid aim air ale all amp and ant any ape app apt arc are arm art ash ask ate awe axe bad bag ban bar bat bay bed bee beg bel bet bid big bin bit boa bob bog boo bow boy bra bud bug bum bun bus but buy bye cab can cap car cat caw cob cod cog con coo cop cot cow coy cry cub cue cup cut dab dad dam dan day den dew did die dig dim din dip doc dog don dot dry dub duo dye ear eat ebb eco eel egg ego eke elf elk elm end eon era ere erg err eve eye fad fag fan far fat fed fee fen few fey fez fib fie fig fin fir fit fix fly fob foe fog for fox fro fry fun fur gab gad gag gal gam gap gar gas gay gel gem get gig gin gip glad gob god goo got gum gun gut guy gym had hag ham han has hat hay hem hen her hey hic hid hie him hin hip his hit hob hod hog hop hot how hoy hub hue hug hum hun hut ice icy ids iff ill imp ink inn ion ire irk its ivy jab jag jam jar jaw jay jet jib jig job jog jot joy jug jut kea keg ken key kid kin kit koa lab lad lag lam lap lar las lat law lax lay lea led lee leg lei lek let leu lev ley lib lid lie lin lip lit lob log loo lop lot low lox lug lye mac mad mae mag man map mar mas mat maw max may med meg men met mew mid mig mil min mir mix mob mod mog mol mom mon moo mop mor mot mow mud mug mum mun mus mut nab nae nag nah nam nan nap nay neb nee net new nib nil nim nip nit nix nob nod nog noh nom non nor nos not now nub nun nus nut oak oar oat oba obe obi odd ode ods oes off oft ohm oho ohs oil oka oke old ole oma oms one ono ons ony opa ope ops opt ora orb ore ors ort ose oud our out ova owe owl own owt oxo oxy pac pad pah pal pan pap par pas pat paw pax pay pea pec fed pee peg pen pep per pes pet pew phi pht pia pic pie pig pin pip pis pit piu pix ply pod poh poi pol pom poo pop pot pow pox pry pub pud pug pun pup pus put pye pyx qat qua rad rag rah rai raj ram ran rap ras rat raw ray reb red ree ref reg rei rem rep res rev rex rhea rho ria rib rid rif rig rim rin rip rob roc rod roe rom rot row rub rue rug rum run rut rya rye sac sad sae sag sal sap sat sau saw sax say sea sec see seg sei sel sen set sew sex sha she shy sib sic sim sin sip sir sis sit six ski sky sly sob sod sol son sop sot sow sox soy spa spy sub sue sum sun sup sus tab tad tag taj tam tan tap tar tas tat tau taw tax tea ted tee ten tet tew the tho thy tic tie til tin tip tis tit toe tog tom ton too top tor tot tow toy try tsk tub tug tui tun tup tut tux twa two tye udo ugh uke ulu umm ump ums uni uns upo ups urb urd ure urn use uta ute uts vac van var vas vat vau vav vaw vee veg vet vex via vid vie vig vim vin vis voe vow vox vug wad wae wag wan wap war was wat waw wax way web wed wee wen wet wha who why wig win wis wit wiz woe wok won woo wos wot wow wry wud wye wyn xis yad yae yag yah yak yam yap yar yaw yay yea yeh yen yep yes yet yew yid yin yip yob yod yok yon you yow yug yuk yum yup zag zap zas zax zed zee zek zen zig zin zip zit zoa zoo zuz
+    able about above ache acid across actor adult after again agree alarm album alert alike alive allow almost alone along also always amber among angel angle animal ankle answer apple apron arch area army around arrive arrow artist awake away awesome baby back badge bake baker ball band bank bare barn base basic basket bath beach beam bean bear beard beat beauty because become beef before begin being belief bell belly below belt bench best better between beyond bike bill bird birth bite black blade blank blast blaze blend bless blink block blood bloom blue board boat body boil bold bone book boost boot border born both bottle bottom bowl box brain branch brave bread break breeze brick bridge bright bring broad brown brush bubble budget build built bunch burn burst bush busy butter button cabin cable cake calm came camp candy cape card care career carpet carry case cash catch cause cave cell center chair chalk chance change chart charm cheap check cheek cheer chest chief child chime choice choose circle city claim class clean clear clerk click cliff climb clock close cloth cloud coach coast coat code coffee cold collect color combine come comic common cook cool copper copy cord corn corner cost couch count country course cover cozy craft crash cream creek crew crisp cross crowd crown crush cube curb cure curl curve cute cycle daily dance dare dark date dawn deal dear debit deck deep deer delay dense desk detail diary dine dinner dirt dish dive doctor dodge doll done door double dove down draft drag drama draw dream dress drift drink drive drop drum duck dust duty eager early earth ease east easy echo edge edit elbow elder else email empty enjoy enter equal error even event ever every exact exam extra face fact fade fair faith fall false fame family fancy farm fast fault favorite fear feast feed feel feet fell felt fence fever field fierce file fill film final find fine finger finish fire firm first fish five flag flame flash flat flavor flesh flight flip float floor flour flow flower focus fold food foot force forest forget form forth found frame free fresh friend front frost fruit full funny future gain game garden gate gear gem gentle gift girl give glad glass glide glow goal goat gold gone good goose grace grade grain grand grape grass gray great green greet grill grip ground group grow guard guess guide gulf gusto habit hair half hall hand handle hang happy harbor hard harm have hazel head health hear heart heat heavy heel height held hello help herb hero hide high hill hint hire history hobby hold hole home honey honor hood hope horse hose host hotel hour house huge human humor hunt hurry hurt idea image inch inner input iron island issue item jacket jazz jean jelly jewel join joke judge juice jump keep kettle kick kind king kiss kitchen kite knee knew knife knit knock knot know label lace lady lake lamp land lane large laser last late laugh launch lawn layer lead leaf learn least leave ledge left lemon lend length less lesson level lever light like limit line linen link lion list live load loaf local lock loft logic long look loom loose love lower lucky lunch lush magic mail main make maker march mark market mask mass master match matter maybe meal mean meat media meet mellow member memory menu mess metal meter middle might mild mile milk mind mine mint mirror model modern moment money month mood moon more most motor mount mouse mouth move movie much music must nail name near neat neck need nest never news next nice night noble noise north note novel nurse ocean offer okay older olive once only open opera option orange order other outer oven over owner page paint pair pale panel paper park part party pass past patch path pause peace peak pearl pencil people pepper perfect phone photo piano pick piece pile pillow pilot pink pipe pizza place plain plan plant plate play pleased plot plum plus poem point polish pool porch port pose post pound power press price pride prime print prize proof proud pulse pump pure purple push puzzle quick quiet quilt quote race radio rain raise rally ranch range rapid rare rate reach react read ready real reason record refer relax rest result return review ribbon rich ride right ring rise river road roast rock role roof room root rope rose rough round route royal rule runner rush safe sail salad salt same sand save scale scene school score screen search season seat second secret seed seem select self send sense serve settle seven shade shake shape share sharp sheep shelf shine shirt shock shoe shoot shop shore short show shut side sight sign silk silver simple sing single sister site size skill skin skirt sky sleep slice slide slim slip slope slow small smart smile smoke smooth snack snap snow soft soil solid solve song soon sort sound south space spare spark speak speed spell spend spice spirit split sport spot spring square stable stack staff stage stair stamp stand star start state stay steam steel step stick still stock stone store storm story stove straight stream street stress strike string strong study style sugar summer super sweet swing table tail take tall tank taste teach team tear teeth tell tempo tennis thank theme there thick thin thing think third those thread three throw thumb time timer tiny title today tone tongue tool touch tower town track trade trail train treat trend trial trip truck true trust twin type uncle under unit until upset urban usual valid value vase vast velvet very view village visit vital voter wage wait wake walk warm wash watch water wave weave week weight well west what wheel when where which while white whole wide wife wild will wind window wine wing winter wipe wire wise wish within woman wood word work world worry worth would wrap write writer year yellow young youth zero zone
+    `.trim().toLowerCase().split(/\s+/);
+
+    const DICTIONARY = new Set(WORDS);
+
+    const LETTER_POOL = [
+      'A','A','A','A','A','A','A','A','A','A',
+      'B','B','C','C','C','C','D','D','D','D','D',
+      'E','E','E','E','E','E','E','E','E','E','E','E','E',
+      'F','F','F','G','G','G','G','H','H','H','H',
+      'I','I','I','I','I','I','I','I','I','J','K',
+      'L','L','L','L','L','M','M','M','M','N','N','N','N','N','N','N',
+      'O','O','O','O','O','O','O','O','P','P','P','P','Q','R','R','R','R','R','R','R',
+      'S','S','S','S','S','S','T','T','T','T','T','T','T','U','U','U','U','U',
+      'V','V','W','W','W','X','Y','Y','Y','Z'
+    ];
+
+    const gridEl = document.getElementById('grid');
+    const currentWordEl = document.getElementById('currentWord');
+    const messageEl = document.getElementById('message');
+    const wordListEl = document.getElementById('wordList');
+    const timeDisplayEl = document.getElementById('timeDisplay');
+    const wordsDisplayEl = document.getElementById('wordsDisplay');
+    const scoreDisplayEl = document.getElementById('scoreDisplay');
+    const bestDisplayEl = document.getElementById('bestDisplay');
+    const clearBtn = document.getElementById('clearBtn');
+    const shuffleBtn = document.getElementById('shuffleBtn');
+    const newGameBtn = document.getElementById('newGameBtn');
+    const overlayEl = document.getElementById('overlay');
+    const finalWordsEl = document.getElementById('finalWords');
+    const finalScoreEl = document.getElementById('finalScore');
+    const finalPercentileEl = document.getElementById('finalPercentile');
+    const finalBestEl = document.getElementById('finalBest');
+    const playAgainBtn = document.getElementById('playAgainBtn');
+
+    let board = [];
+    let selectedPath = [];
+    let foundWords = new Set();
+    let score = 0;
+    let timeLeft = ROUND_SECONDS;
+    let timerId = null;
+    let gameActive = false;
+    let pointerDown = false;
+    let bestWords = parseInt(localStorage.getItem(BEST_WORDS_KEY) || '0', 10);
+
+    function randomLetter() {
+      return LETTER_POOL[Math.floor(Math.random() * LETTER_POOL.length)];
+    }
+
+    function buildBoard() {
+      board = Array.from({ length: BOARD_SIZE }, () =>
+        Array.from({ length: BOARD_SIZE }, () => randomLetter())
+      );
+    }
+
+    function renderBoard() {
+      gridEl.innerHTML = '';
+      for (let row = 0; row < BOARD_SIZE; row++) {
+        for (let col = 0; col < BOARD_SIZE; col++) {
+          const tile = document.createElement('button');
+          tile.className = 'tile';
+          tile.textContent = board[row][col];
+          tile.dataset.row = String(row);
+          tile.dataset.col = String(col);
+
+          if (selectedPath.some(pos => pos.row === row && pos.col === col)) {
+            tile.classList.add('selected');
+          }
+
+          tile.addEventListener('pointerdown', handlePointerDown);
+          tile.addEventListener('pointerenter', handlePointerEnter);
+
+          gridEl.appendChild(tile);
+        }
+      }
+      updateCurrentWord();
+    }
+
+    function coordsFromElement(el) {
+      return {
+        row: parseInt(el.dataset.row, 10),
+        col: parseInt(el.dataset.col, 10)
+      };
+    }
+
+    function handlePointerDown(event) {
+      if (!gameActive) return;
+      event.preventDefault();
+      pointerDown = true;
+      const { row, col } = coordsFromElement(event.currentTarget);
+      startSelection(row, col);
+    }
+
+    function handlePointerEnter(event) {
+      if (!gameActive || !pointerDown) return;
+      event.preventDefault();
+      const { row, col } = coordsFromElement(event.currentTarget);
+      extendSelection(row, col);
+    }
+
+    function startSelection(row, col) {
+      selectedPath = [{ row, col }];
+      clearMessage();
+      renderBoard();
+    }
+
+    function extendSelection(row, col) {
+      const existingIndex = selectedPath.findIndex(pos => pos.row === row && pos.col === col);
+
+      if (existingIndex === selectedPath.length - 1) return;
+
+      if (existingIndex !== -1) {
+        if (existingIndex === selectedPath.length - 2) {
+          selectedPath.pop();
+          renderBoard();
+        }
+        return;
+      }
+
+      const last = selectedPath[selectedPath.length - 1];
+      if (!isAdjacent(last.row, last.col, row, col)) return;
+
+      selectedPath.push({ row, col });
+      renderBoard();
+    }
+
+    function isAdjacent(r1, c1, r2, c2) {
+      return Math.abs(r1 - r2) <= 1 && Math.abs(c1 - c2) <= 1 && !(r1 === r2 && c1 === c2);
+    }
+
+    function getCurrentWord() {
+      return selectedPath.map(pos => board[pos.row][pos.col]).join('').toLowerCase();
+    }
+
+    function updateCurrentWord() {
+      const word = getCurrentWord();
+      currentWordEl.textContent = word ? word.toUpperCase() : 'Drag letters to build a word';
+    }
+
+    function showMessage(text, good = true) {
+      messageEl.textContent = text;
+      messageEl.className = 'message ' + (good ? 'good' : 'bad');
+    }
+
+    function clearMessage() {
+      messageEl.textContent = '';
+      messageEl.className = 'message';
+    }
+
+    function clearSelection() {
+      selectedPath = [];
+      renderBoard();
+    }
+
+    function formatTime(seconds) {
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${String(secs).padStart(2, '0')}`;
+    }
+
+    function updateStats() {
+      timeDisplayEl.textContent = formatTime(timeLeft);
+      wordsDisplayEl.textContent = String(foundWords.size);
+      scoreDisplayEl.textContent = String(score);
+      bestDisplayEl.textContent = String(bestWords);
+    }
+
+    function scoreWord(word) {
+      if (word.length === 3) return 100;
+      if (word.length === 4) return 180;
+      if (word.length === 5) return 280;
+      if (word.length === 6) return 420;
+      return 600 + ((word.length - 7) * 120);
+    }
+
+    function addWordToList(word) {
+      const li = document.createElement('li');
+      li.textContent = word;
+      wordListEl.prepend(li);
+    }
+
+    function submitWord() {
+      if (!gameActive) return;
+      const word = getCurrentWord();
+
+      if (word.length < 3) return;
+      
+      if (!DICTIONARY.has(word)) {
+        showMessage(`'${word.toUpperCase()}' is not in our dictionary.`, false);
+        return;
+      }
+      if (foundWords.has(word)) {
+        showMessage('You already found that word.', false);
+        return;
+      }
+
+      const gained = scoreWord(word);
+      foundWords.add(word);
+      score += gained;
+      addWordToList(word);
+      showMessage(`Nice! ${word.toUpperCase()} (+${gained})`, true);
+
+      removeSelectedTiles();
+      refillBoard();
+      updateStats();
+    }
+
+    function removeSelectedTiles() {
+      selectedPath.forEach(({ row, col }) => {
+        board[row][col] = null;
+      });
+    }
+
+    function refillBoard() {
+      for (let col = 0; col < BOARD_SIZE; col++) {
+        const existing = [];
+        for (let row = BOARD_SIZE - 1; row >= 0; row--) {
+          if (board[row][col] !== null) existing.push(board[row][col]);
+        }
+
+        let fillRow = BOARD_SIZE - 1;
+        for (const letter of existing) {
+          board[fillRow][col] = letter;
+          fillRow--;
+        }
+        while (fillRow >= 0) {
+          board[fillRow][col] = randomLetter();
+          fillRow--;
+        }
+      }
+    }
+
+    function shuffleBoard() {
+      if (!gameActive) return;
+      const letters = board.flat();
+      for (let i = letters.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [letters[i], letters[j]] = [letters[j], letters[i]];
+      }
+      let idx = 0;
+      for (let row = 0; row < BOARD_SIZE; row++) {
+        for (let col = 0; col < BOARD_SIZE; col++) {
+          board[row][col] = letters[idx++];
+        }
+      }
+      clearSelection();
+      showMessage('Letters shuffled!', true);
+    }
+
+    function todayKey() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function getTodayScores() {
+      const today = todayKey();
+      const storedDate = localStorage.getItem(TODAY_DATE_KEY);
+      if (storedDate !== today) {
+        localStorage.setItem(TODAY_DATE_KEY, today);
+        const fresh = [5, 7, 9, 10, 12, 13, 15, 17, 18, 20, 22, 24];
+        localStorage.setItem(TODAY_SCORES_KEY, JSON.stringify(fresh));
+        return fresh;
+      }
+      try {
+        return JSON.parse(localStorage.getItem(TODAY_SCORES_KEY) || '[]');
+      } catch {
+        return [];
+      }
+    }
+
+    function saveTodayScore(wordCount) {
+      const scores = getTodayScores();
+      scores.push(wordCount);
+      localStorage.setItem(TODAY_SCORES_KEY, JSON.stringify(scores.slice(-200)));
+      return scores;
+    }
+
+    function percentileForScore(wordCount) {
+      const scores = saveTodayScore(wordCount);
+      if (!scores.length) return 50;
+      const below = scores.filter(score => score <= wordCount).length;
+      return Math.max(1, Math.min(99, Math.round((below / scores.length) * 100)));
+    }
+
+    function endGame() {
+      clearInterval(timerId);
+      gameActive = false;
+      shuffleBtn.disabled = true;
+
+      if (foundWords.size > bestWords) {
+        bestWords = foundWords.size;
+        localStorage.setItem(BEST_WORDS_KEY, String(bestWords));
+      }
+
+      const pct = percentileForScore(foundWords.size);
+      updateStats();
+      finalWordsEl.textContent = `${foundWords.size} ${foundWords.size === 1 ? 'word' : 'words'}`;
+      finalScoreEl.textContent = String(score);
+      finalPercentileEl.textContent = `${pct}%`;
+      finalBestEl.textContent = String(bestWords);
+      overlayEl.classList.add('show');
+    }
+
+    function startTimer() {
+      clearInterval(timerId);
+      timerId = setInterval(() => {
+        timeLeft--;
+        updateStats();
+        if (timeLeft <= 0) {
+          endGame();
+        }
+      }, 1000);
+    }
+
+    function startNewGame() {
+      clearInterval(timerId);
+      buildBoard();
+      selectedPath = [];
+      foundWords = new Set();
+      score = 0;
+      timeLeft = ROUND_SECONDS;
+      pointerDown = false;
+      gameActive = true;
+      wordListEl.innerHTML = '';
+      clearMessage();
+      overlayEl.classList.remove('show');
+      shuffleBtn.disabled = false;
+      renderBoard();
+      updateStats();
+      startTimer();
+    }
+
+    // AUTO-SUBMIT LOGIC: Checks word when mouse/finger is lifted
+    document.addEventListener('pointerup', () => {
+      if (gameActive && selectedPath.length >= 3) {
+        submitWord();
+      }
+      pointerDown = false;
+      clearSelection();
+    });
+
+    document.addEventListener('pointercancel', () => {
+      pointerDown = false;
+      clearSelection();
+    });
+
+    clearBtn.addEventListener('click', (e) => {
+      e.stopPropagation(); // Prevent triggering board logic
+      clearSelection();
+      clearMessage();
+    });
+    
+    shuffleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      shuffleBoard();
+    });
+    
+    newGameBtn.addEventListener('click', startNewGame);
+    playAgainBtn.addEventListener('click', startNewGame);
+
+    startNewGame();
+  </script>
 </body>
 </html>
 
