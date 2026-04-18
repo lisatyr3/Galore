@@ -14,15 +14,14 @@
 
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      font-family: -apple-system, sans-serif;
       color: var(--ink);
       background: #fdfcf0;
       padding: 8px;
-      overflow: hidden; /* Helps with iframe stability */
     }
 
     .wrap {
-      max-width: 600px;
+      max-width: 500px;
       margin: 0 auto;
       background: white;
       border-radius: 16px;
@@ -45,6 +44,7 @@
       padding: 4px 10px;
       border-radius: 8px;
       text-align: center;
+      min-width: 60px;
     }
     .stat-label { display: block; font-size: 0.6rem; text-transform: uppercase; color: #6d7689; }
     .stat-value { font-weight: 800; font-size: 1.1rem; }
@@ -56,7 +56,6 @@
       touch-action: none;
     }
 
-    /* Animation only runs when the 'falling' class is added */
     .tile {
       aspect-ratio: 1 / 1;
       border: 0;
@@ -69,7 +68,6 @@
       justify-content: center;
       box-shadow: inset 0 -3px 0 rgba(0,0,0,0.1);
       cursor: pointer;
-      transition: background 0.2s, transform 0.1s;
     }
 
     .falling {
@@ -129,7 +127,7 @@
       list-style: none;
       padding: 0;
       margin: 5px 0 0;
-      max-height: 60px;
+      max-height: 80px;
       overflow-y: auto;
     }
 
@@ -150,7 +148,7 @@
     <h1>Words Galore</h1>
     <div class="stats">
       <div class="stat"><span class="stat-label">Time</span><span class="stat-value" id="time">1:30</span></div>
-      <div class="stat"><span class="stat-label">Score</span><span class="stat-value" id="score">0</span></div>
+      <div class="stat"><span class="stat-label">Words</span><span class="stat-value" id="score">0</span></div>
     </div>
   </div>
 
@@ -171,8 +169,8 @@
 </div>
 
 <script>
-  // Expanded word set including MOO and ONE
-  const WORDS = new Set(["moo","one","ace","act","add","age","ago","aid","aim","air","ale","all","and","ant","any","ape","app","apt","arc","are","arm","art","ash","ask","ate","awe","axe","bad","bag","ban","bar","bat","bay","bed","bee","beg","bet","bid","big","bin","bit","boa","bob","bog","boo","bow","boy","bra","bud","bug","bum","bun","bus","but","buy","bye","cab","can","cap","car","cat","caw","cob","cod","cog","con","coo","cop","cot","cow","coy","cry","cub","cue","cup","cut","dab","dad","dam","day","den","dew","did","die","dig","dim","din","dip","doc","dog","don","dot","dry","dub","duo","dye","ear","eat","ebb","eco","eel","egg","ego","eke","elf","elk","elm","end","eon","era","ere","erg","err","eve","eye","fad","fag","fan","far","fat","fed","fee","fen","few","fey","fez","fib","fie","fig","fin","fir","fit","fix","fly","fob","foe","fog","for","fox","fro","fry","fun","fur","gab","gad","gag","gal","gam","gap","gar","gas","gay","gel","gem","get","gig","gin","gip","glad","gob","god","goo","got","gum","gun","gut","guy","gym","had","hag","ham","han","has","hat","hay","hem","hen","her","hey","hic","hid","hie","him","hin","hip","his","hit","hob","hod","hog","hop","hot","how","hoy","hub","hue","hug","hum","hun","hut","ice","icy","ids","iff","ill","imp","ink","inn","ion","ire","irk","its","ivy","jab","jag","jam","jar","jaw","jay","jet","jib","jig","job","jog","jot","joy","jug","jut","kea","keg","ken","key","kid","kin","kit","koa","lab","lad","lag","lam","lap","lar","las","lat","law","lax","lay","lea","led","lee","leg","lei","lek","let","leu","lev","ley","lib","lid","lie","lin","lip","lit","lob","log","loo","lop","lot","low","lox","lug","lye","mac","mad","mae","mag","man","map","mar","mas","mat","maw","max","may","med","meg","men","met","mew","mid","mig","mil","min","mir","mix","mob","mod","mog","mol","mom","mon","mop","mor","mot","mow","mud","mug","mum","mun","mus","mut","nab","nae","nag","nah","nam","nan","nap","nay","neb","nee","net","new","nib","nil","nim","nip","nit","nix","nob","nod","nog","noh","nom","non","nor","nos","not","now","nub","nun","nus","nut","oak","oar","oat","oba","obe","obi","odd","ode","ods","oes","off","oft","ohm","oho","ohs","oil","oka","oke","old","ole","oma","oms","ono","ons","ony","opa","ope","ops","opt","ora","orb","ore","ors","ort","ose","oud","our","out","ova","owe","owl","own","owt","oxo","oxy","pac","pad","pah","pal","pan","pap","par","pas","pat","paw","pax","pay","pea","pec","fed","pee","peg","pen","pep","per","pes","pet","pew","phi","pht","pia","pic","pie","pig","pin","pip","pis","pit","piu","pix","ply","pod","poh","poi","pol","pom","poo","pop","pot","pow","pox","pry","pub","pud","pug","pun","pup","pus","put","pye","pyx","qat","qua","rad","rag","rah","rai","raj","ram","ran","rap","ras","rat","raw","ray","reb","red","ree","ref","reg","rei","rem","rep","res","rev","rex","rhea","rho","ria","rib","rid","rif","rig","rim","rin","rip","rob","roc","rod","roe","rom","rot","row","rub","rue","rug","rum","run","rut","rya","rye","sac","sad","sae","sag","sal","sap","sat","sau","saw","sax","say","sea","sec","see","seg","sei","sel","sen","set","sew","sex","sha","she","shy","sib","sic","sim","sin","sip","sir","sis","sit","six","ski","sky","sly","sob","sod","sol","son","sop","sot","sow","sox","soy","spa","spy","sub","sue","sum","sun","sup","sus","tab","tad","tag","taj","tam","tan","tap","tar","tas","tat","tau","taw","tax","tea","ted","tee","ten","tet","tew","the","tho","thy","tic","tie","til","tin","tip","tis","tit","toe","tog","tom","ton","too","top","tor","tot","tow","toy","try","tsk","tub","tug","tui","tun","tup","tut","tux","twa","two","tye","udo","ugh","uke","ulu","umm","ump","ums","uni","uns","upo","ups","urb","urd","ure","urn","use","uta","ute","uts","vac","van","var","vas","vat","vau","vav","vaw","vee","veg","vet","vex","via","vid","vie","vig","vim","vin","vis","voe","vow","vox","vug","wad","wae","wag","wan","wap","war","was","wat","waw","wax","way","web","wed","wee","wen","wet","wha","who","why","wig","win","wis","wit","wiz","woe","wok","won","woo","wos","wot","wow","wry","wud","wye","wyn","xis","yad","yae","yag","yah","yak","yam","yap","yar","yaw","yay","yea","yeh","yen","yep","yes","yet","yew","yid","yin","yip","yob","yod","yok","yon","you","yow","yug","yuk","yum","yup","zag","zap","zas","zax","zed","zee","zek","zen","zig","zin","zip","zit","zoa","zoo","zuz"]);
+  // Expanded dictionary with "ONE", "MOO", "LONE", "TAIL", etc.
+  const WORDS = new Set(["moo","one","lone","tail","ace","act","add","age","ago","aid","aim","air","ale","all","and","ant","any","ape","app","apt","arc","are","arm","art","ash","ask","ate","awe","axe","bad","bag","ban","bar","bat","bay","bed","bee","beg","bet","bid","big","bin","bit","boa","bob","bog","boo","bow","boy","bra","bud","bug","bum","bun","bus","but","buy","bye","cab","can","cap","car","cat","caw","cob","cod","cog","con","coo","cop","cot","cow","coy","cry","cub","cue","cup","cut","dab","dad","dam","day","den","dew","did","die","dig","dim","din","dip","doc","dog","don","dot","dry","dub","duo","dye","ear","eat","ebb","eco","eel","egg","ego","eke","elf","elk","elm","end","eon","era","ere","erg","err","eve","eye","fad","fag","fan","far","fat","fed","fee","fen","few","fey","fez","fib","fie","fig","fin","fir","fit","fix","fly","fob","foe","fog","for","fox","fro","fry","fun","fur","gab","gad","gag","gal","gam","gap","gar","gas","gay","gel","gem","get","gig","gin","gip","glad","gob","god","goo","got","gum","gun","gut","guy","gym","had","hag","ham","han","has","hat","hay","hem","hen","her","hey","hic","hid","hie","him","hin","hip","his","hit","hob","hod","hog","hop","hot","how","hoy","hub","hue","hug","hum","hun","hut","ice","icy","ids","iff","ill","imp","ink","inn","ion","ire","irk","its","ivy","jab","jag","jam","jar","jaw","jay","jet","jib","jig","job","jog","jot","joy","jug","jut","kea","keg","ken","key","kid","kin","kit","koa","lab","lad","lag","lam","lap","lar","las","lat","law","lax","lay","lea","led","lee","leg","lei","lek","let","leu","lev","ley","lib","lid","lie","lin","lip","lit","lob","log","loo","lop","lot","low","lox","lug","lye","mac","mad","mae","mag","man","map","mar","mas","mat","maw","max","may","med","meg","men","met","mew","mid","mig","mil","min","mir","mix","mob","mod","mog","mol","mom","mon","mop","mor","mot","mow","mud","mug","mum","mun","mus","mut","nab","nae","nag","nah","nam","nan","nap","nay","neb","nee","net","new","nib","nil","nim","nip","nit","nix","nob","nod","nog","noh","nom","non","nor","nos","not","now","nub","nun","nus","nut","oak","oar","oat","oba","obe","obi","odd","ode","ods","oes","off","oft","ohm","oho","ohs","oil","oka","oke","old","ole","oma","oms","ono","ons","ony","opa","ope","ops","opt","ora","orb","ore","ors","ort","ose","oud","our","out","ova","owe","owl","own","owt","oxo","oxy","pac","pad","pah","pal","pan","pap","par","pas","pat","paw","pax","pay","pea","pec","fed","pee","peg","pen","pep","per","pes","pet","pew","phi","pht","pia","pic","pie","pig","pin","pip","pis","pit","piu","pix","ply","pod","poh","poi","pol","pom","poo","pop","pot","pow","pox","pry","pub","pud","pug","pun","pup","pus","put","pye","pyx","qat","qua","rad","rag","rah","rai","raj","ram","ran","rap","ras","rat","raw","ray","reb","red","ree","ref","reg","rei","rem","rep","res","rev","rex","rhea","rho","ria","rib","rid","rif","rig","rim","rin","rip","rob","roc","rod","roe","rom","rot","row","rub","rue","rug","rum","run","rut","rya","rye","sac","sad","sae","sag","sal","sap","sat","sau","saw","sax","say","sea","sec","see","seg","sei","sel","sen","set","sew","sex","sha","she","shy","sib","sic","sim","sin","sip","sir","sis","sit","six","ski","sky","sly","sob","sod","sol","son","sop","sot","sow","sox","soy","spa","spy","sub","sue","sum","sun","sup","sus","tab","tad","tag","taj","tam","tan","tap","tar","tas","tat","tau","taw","tax","tea","ted","tee","ten","tet","tew","the","tho","thy","tic","tie","til","tin","tip","tis","tit","toe","tog","tom","ton","too","top","tor","tot","tow","toy","try","tsk","tub","tug","tui","tun","tup","tut","tux","twa","two","tye","udo","ugh","uke","ulu","umm","ump","ums","uni","uns","upo","ups","urb","urd","ure","urn","use","uta","ute","uts","vac","van","var","vas","vat","vau","vav","vaw","vee","veg","vet","vex","via","vid","vie","vig","vim","vin","vis","voe","vow","vox","vug","wad","wae","wag","wan","wap","war","was","wat","waw","wax","way","web","wed","wee","wen","wet","wha","who","why","wig","win","wis","wit","wiz","woe","wok","won","woo","wos","wot","wow","wry","wud","wye","wyn","xis","yad","yae","yag","yah","yak","yam","yap","yar","yaw","yay","yea","yeh","yen","yep","yes","yet","yew","yid","yin","yip","yob","yod","yok","yon","you","yow","yug","yuk","yum","yup","zag","zap","zas","zax","zed","zee","zek","zen","zig","zin","zip","zit","zoa","zoo","zuz"]);
 
   const LETTERS = "AAAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIJKLLLLMMNNNNNNOOOOOOPPQRRRRRSSSSSSTTTTTTUUUUUVVWXYYZ";
   let board = [], selected = [], found = new Set(), score = 0, time = 90, active = true, isDown = false;
@@ -182,7 +180,7 @@
     found.clear(); score = 0; time = 90; active = true;
     document.getElementById('wordList').innerHTML = '';
     updateUI(); 
-    render(true); // true means use falling animation
+    render(true);
     startTimer();
   }
 
@@ -242,14 +240,16 @@
   }
 
   function submit() {
+    if (!active) return;
     const word = selected.map(i => board[i].char).join('').toLowerCase();
+    
     if(word.length >= 3 && WORDS.has(word) && !found.has(word)) {
       found.add(word);
-      score += (word.length * 100);
-      const li = document.createElement('li'); li.textContent = word.toUpperCase();
+      score += 1; // 1 point per word found
+      const li = document.createElement('li'); 
+      li.textContent = word.toUpperCase();
       document.getElementById('wordList').prepend(li);
       
-      // Only the selected tiles get new letters and falling animation
       selected.forEach(i => {
         board[i] = { char: randomChar(), key: Math.random(), isNew: true };
       });
@@ -267,7 +267,10 @@
     const clock = setInterval(() => {
       if(!active) { clearInterval(clock); return; }
       time--; updateUI();
-      if(time <= 0) { active = false; alert("Time's up! Your final score is: " + score); }
+      if(time <= 0) { 
+        active = false; 
+        alert("Game Over! You found " + score + " words."); 
+      }
     }, 1000);
   }
 
