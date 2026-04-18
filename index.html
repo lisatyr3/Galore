@@ -18,7 +18,7 @@
       color: var(--ink);
       background: #fdfcf0;
       padding: 8px;
-      touch-action: none; /* Prevents screen scrolling while playing */
+      touch-action: none; 
     }
 
     .wrap {
@@ -99,6 +99,12 @@
       min-height: 40px;
       color: var(--purple);
       text-transform: uppercase;
+      transition: background 0.2s;
+    }
+
+    .current-box.success {
+      background: var(--green);
+      color: white;
     }
 
     .actions { display: flex; gap: 6px; }
@@ -165,13 +171,13 @@
   </div>
 
   <div class="word-area">
-    <div style="font-size: 0.7rem; font-weight: 800; color: #999; text-transform: uppercase;">Words Found (3+ letters)</div>
+    <div style="font-size: 0.7rem; font-weight: 800; color: #999; text-transform: uppercase;">Words Found</div>
     <ul class="word-list" id="wordList"></ul>
   </div>
 </div>
 
 <script>
-  // Core word list - expanded with common 4+ letter words
+  // Comprehensive Word List (Includes 3, 4, and 5+ letter words)
   const WORDS = new Set(["moo","one","lone","tail","able","acid","also","area","army","away","back","ball","band","bank","base","bath","bear","beat","been","bell","belt","best","bird","blue","boat","body","bomb","bond","bone","book","boom","born","boss","both","bowl","bulk","burn","bush","busy","cake","call","calm","came","camp","card","care","case","cash","cast","cell","chat","city","club","coat","code","cold","come","cook","cool","copy","cost","crew","crop","dark","data","date","dawn","dead","deal","dear","debt","deep","desk","dial","diet","dirt","dish","disk","does","done","door","dose","down","draw","drew","drop","drug","drum","dual","duke","dust","duty","each","earn","east","easy","edge","else","even","ever","exam","exit","face","fact","fail","fair","fall","farm","fast","fate","fear","feed","feel","feet","fell","felt","file","fill","film","find","fine","fire","firm","fish","five","flat","flow","food","foot","ford","form","fort","four","free","from","fuel","full","fund","gain","game","gate","gave","gear","gift","girl","give","glad","goal","gold","gone","good","gray","grew","grow","gulf","hair","half","hall","hand","hang","hard","hate","have","head","hear","heat","held","hell","help","here","hero","high","hill","hire","hold","hole","holy","home","hope","host","hour","huge","hung","hunt","hurt","idea","inch","into","iron","item","jack","jane","jazz","join","jump","just","keep","kept","kick","kill","kind","king","knee","knew","know","lack","lady","lake","land","lane","last","late","lead","left","less","life","lift","like","line","link","list","live","load","loan","lock","logo","long","look","lord","lose","loss","lost","loud","love","luck","made","mail","main","make","male","many","mark","mass","matt","meal","mean","meat","meet","menu","mile","milk","mill","mind","mine","miss","mode","mood","moon","more","most","move","much","must","name","near","neck","need","news","next","nice","nine","none","nose","note","okay","once","only","onto","open","oral","over","pace","pack","page","paid","pain","pair","palm","park","part","pass","past","path","peak","pick","pile","pink","pipe","plan","play","plot","plug","plus","poem","poet","poll","pool","poor","port","post","pull","pure","push","race","rail","rain","rank","rare","rate","read","real","rear","rely","rent","rest","rice","rich","ride","ring","rise","risk","road","rock","role","roof","room","root","rose","rule","rush","safe","said","sale","salt","same","sand","save","seat","seed","seek","seem","seen","sell","send","sent","sept","ship","shop","shot","show","shut","sick","side","sign","site","size","skin","slip","slow","snow","soft","soil","sold","sole","some","song","soon","sort","soul","soup","stay","step","stop","such","suit","sure","take","talk","tall","tank","tape","task","team","tell","tent","term","test","than","that","them","then","they","thin","this","thou","thus","tide","tidy","till","time","tiny","told","toll","tone","tony","took","tool","tour","town","tree","trip","true","tune","turn","twin","type","unit","upon","used","user","vary","vast","very","vice","view","vote","wage","wait","wake","walk","wall","want","ward","warm","wash","wave","ways","weak","wear","week","well","went","were","west","what","when","whom","wide","wife","wild","will","wind","wine","wing","wire","wise","wish","with","wood","word","wore","work","yard","yeah","year","your","zero","zone"]);
 
   const LETTERS = "AAAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIIIJKLLLLMMNNNNNNOOOOOOPPQRRRRRSSSSSSTTTTTTUUUUUVVWXYYZ";
@@ -200,12 +206,10 @@
         tile.isNew = false; 
       }
       btn.textContent = tile.char;
-      btn.dataset.index = i;
 
-      // Selection logic
       btn.onpointerdown = (e) => { 
         if(!active) return;
-        btn.releasePointerCapture(e.pointerId); // Allows enter events to trigger on other tiles
+        btn.releasePointerCapture(e.pointerId); 
         isDown = true; 
         selected = [i]; 
         updateCurrentDisplay();
@@ -244,12 +248,19 @@
   }
 
   function submit() {
-    if (!active) return;
+    if (!active || selected.length === 0) return;
     const word = selected.map(i => board[i].char).join('').toLowerCase();
     
+    const displayBox = document.getElementById('currentWord');
+
     if(word.length >= 3 && WORDS.has(word) && !found.has(word)) {
       found.add(word);
       score += 1;
+      
+      // Success visual feedback
+      displayBox.classList.add('success');
+      setTimeout(() => displayBox.classList.remove('success'), 400);
+
       const li = document.createElement('li'); 
       li.textContent = word.toUpperCase();
       document.getElementById('wordList').prepend(li);
@@ -259,7 +270,12 @@
       });
       render(false); 
     }
-    selected = []; isDown = false; updateUI(); updateCurrentDisplay(); highlightSelection();
+    
+    selected = []; 
+    isDown = false; 
+    updateUI(); 
+    updateCurrentDisplay(); 
+    highlightSelection();
   }
 
   function updateUI() {
