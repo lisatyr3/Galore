@@ -10,12 +10,13 @@
       --pink: #ff5fa2;
       --gold: #ffbf3f;
       --green: #22c878;
+      --blue: #6e7ff2;
     }
     * { box-sizing: border-box; touch-action: none; }
     body {
       margin: 0;
       font-family: sans-serif;
-      background: #fdfdfd;
+      background: linear-gradient(135deg, #fffbe2, #ffe8f6, #e7f8ff);
       display: flex;
       justify-content: center;
       padding: 10px;
@@ -27,64 +28,83 @@
       max-width: 600px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
     }
     .stats {
       display: flex;
       justify-content: space-around;
-      background: #fff;
-      padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      background: white;
+      padding: 12px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
       font-weight: bold;
+      font-size: 1.1rem;
     }
     .grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      gap: 6px;
+      gap: 8px;
       flex: 1;
+      background: white;
+      padding: 12px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
     .tile {
       aspect-ratio: 1/1;
-      background: #fff;
-      border: 2px solid #eee;
-      border-radius: 8px;
+      background: #ffffff;
+      border: 3px solid #e0e0e0;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.5rem;
-      font-weight: 800;
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: var(--ink);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+      transition: all 0.2s ease;
       user-select: none;
-      pointer-events: auto;
     }
     .tile.active {
       background: var(--gold);
-      color: #fff;
+      color: white;
       border-color: #f3a61c;
-      transform: scale(0.95);
+      transform: scale(0.92);
+      box-shadow: 0 6px 12px rgba(255, 191, 63, 0.4);
     }
     .current-word-display {
-      background: #eee;
-      padding: 10px;
+      background: white;
+      padding: 14px;
       text-align: center;
-      border-radius: 8px;
-      font-size: 1.2rem;
-      font-weight: 800;
-      min-height: 45px;
-      letter-spacing: 2px;
+      border-radius: 16px;
+      font-size: 1.4rem;
+      font-weight: 900;
+      min-height: 54px;
+      letter-spacing: 3px;
+      color: var(--blue);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
-    .controls { display: flex; gap: 10px; }
+    .controls { display: flex; gap: 12px; }
     .btn {
       flex: 1;
-      padding: 12px;
+      padding: 14px;
       border: none;
-      border-radius: 8px;
-      color: #fff;
+      border-radius: 16px;
+      color: white;
       font-weight: bold;
+      font-size: 1.1rem;
       cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: transform 0.2s;
     }
+    .btn:active { transform: scale(0.95); }
     .btn-new { background: var(--pink); }
-    #msg { text-align: center; font-weight: bold; height: 20px; }
+    #msg { 
+      text-align: center; 
+      font-weight: bold; 
+      font-size: 1.1rem;
+      min-height: 28px;
+    }
   </style>
 </head>
 <body>
@@ -93,7 +113,7 @@
     <div>Time: <span id="timer">1:30</span></div>
     <div>Words: <span id="wordCount">0</span></div>
   </div>
-  <div class="current-word-display" id="tray">SELECT LETTERS</div>
+  <div class="current-word-display" id="tray">DRAG TO FORM WORDS</div>
   <div class="grid" id="grid"></div>
   <div id="msg"></div>
   <div class="controls">
@@ -102,15 +122,13 @@
 </div>
 
 <script>
-// Huge public dictionary (479k+ real English words)
+// Huge public dictionary
 let DICT = new Set();
 
 async function loadDictionary() {
   try {
-    console.log("Attempting to load dictionary...");
     const res = await fetch('https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt');
-    
-    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     
     const text = await res.text();
     DICT = new Set(
@@ -118,15 +136,11 @@ async function loadDictionary() {
           .map(w => w.trim().toLowerCase())
           .filter(w => w.length >= 3 && /^[a-z]+$/.test(w))
     );
-    
-    console.log(`✅ Dictionary loaded successfully! Total words: ${DICT.size}`);
-    document.getElementById('msg').textContent = "Dictionary ready!";
-    document.getElementById('msg').style.color = "var(--green)";
-    
+    console.log(`✅ Dictionary loaded! Total words: ${DICT.size}`);
     resetGame();
   } catch (e) {
-    console.error("❌ Dictionary load failed:", e);
-    document.getElementById('msg').innerHTML = 'Word list failed to load.<br>Check console (F12) and try refreshing.';
+    console.error("Dictionary load failed:", e);
+    document.getElementById('msg').textContent = "Word list failed to load. Refresh page.";
     document.getElementById('msg').style.color = "red";
   }
 }
@@ -137,12 +151,17 @@ let foundWords = new Set();
 let isDragging = false;
 let gameActive = false;
 let timeLeft = 90;
+let boardLetters = [];   // Now we track the board state for refilling
 
 function createBoard() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
+  boardLetters = [];
+  
   for (let i = 0; i < 36; i++) {
     const letter = TILES[Math.floor(Math.random() * TILES.length)];
+    boardLetters.push(letter);
+    
     const div = document.createElement('div');
     div.className = 'tile';
     div.textContent = letter;
@@ -159,13 +178,12 @@ function handleInteraction(e) {
   const target = document.elementFromPoint(x, y);
   
   if (target && target.classList.contains('tile')) {
-    const idx = target.dataset.index;
+    const idx = parseInt(target.dataset.index);
     if (!activePath.includes(idx)) {
       if (activePath.length > 0) {
-        const lastIdx = parseInt(activePath[activePath.length - 1]);
-        const currIdx = parseInt(idx);
-        const rowDiff = Math.abs(Math.floor(lastIdx/6) - Math.floor(currIdx/6));
-        const colDiff = Math.abs((lastIdx % 6) - (currIdx % 6));
+        const lastIdx = activePath[activePath.length - 1];
+        const rowDiff = Math.abs(Math.floor(lastIdx/6) - Math.floor(idx/6));
+        const colDiff = Math.abs((lastIdx % 6) - (idx % 6));
         if (rowDiff > 1 || colDiff > 1) return;
       }
       activePath.push(idx);
@@ -176,9 +194,7 @@ function handleInteraction(e) {
 }
 
 function updateTray() {
-  const word = activePath.map(idx => 
-    document.querySelector(`[data-index="${idx}"]`).textContent
-  ).join('');
+  const word = activePath.map(idx => boardLetters[idx]).join('');
   document.getElementById('tray').textContent = word;
 }
 
@@ -194,8 +210,16 @@ function submitWord() {
   if (DICT.has(word) && !foundWords.has(word)) {
     foundWords.add(word);
     document.getElementById('wordCount').textContent = foundWords.size;
-    msg.textContent = "NICE! +" + word.toUpperCase();
+    
+    msg.textContent = `NICE! + ${word.toUpperCase()}`;
     msg.style.color = "var(--green)";
+
+    // REFILL the used letters with new ones
+    activePath.forEach(idx => {
+      boardLetters[idx] = TILES[Math.floor(Math.random() * TILES.length)];
+      const tile = document.querySelector(`[data-index="${idx}"]`);
+      if (tile) tile.textContent = boardLetters[idx];
+    });
   } else {
     msg.textContent = foundWords.has(word) ? "ALREADY FOUND" : "NOT IN LIST";
     msg.style.color = "var(--pink)";
@@ -207,8 +231,8 @@ function submitWord() {
 function cleanup() {
   document.querySelectorAll('.tile').forEach(t => t.classList.remove('active'));
   activePath = [];
-  document.getElementById('tray').textContent = "DRAG TO CONNECT";
-  setTimeout(() => { document.getElementById('msg').textContent = ""; }, 1800);
+  document.getElementById('tray').textContent = "DRAG TO FORM WORDS";
+  setTimeout(() => { document.getElementById('msg').textContent = ""; }, 1600);
 }
 
 // Event listeners
@@ -243,7 +267,7 @@ function startTimer() {
   }, 1000);
 }
 
-// Initialize
+// Start
 loadDictionary();
 </script>
 </body>
