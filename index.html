@@ -102,17 +102,15 @@
 </div>
 
 <script>
-// Load huge dictionary directly from GitHub (more reliable)
+// Huge public dictionary (479k+ real English words)
 let DICT = new Set();
 
 async function loadDictionary() {
   try {
-    const url = 'https://raw.githubusercontent.com/lisatyr3/lisatyr3.github.io/main/words.txt';
-    const res = await fetch(url);
+    console.log("Attempting to load dictionary...");
+    const res = await fetch('https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt');
     
-    if (!res.ok) {
-      throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
-    }
+    if (!res.ok) throw new Error(`HTTP error ${res.status}`);
     
     const text = await res.text();
     DICT = new Set(
@@ -121,14 +119,14 @@ async function loadDictionary() {
           .filter(w => w.length >= 3 && /^[a-z]+$/.test(w))
     );
     
-    console.log(`✅ Dictionary loaded! Total words: ${DICT.size}`);
+    console.log(`✅ Dictionary loaded successfully! Total words: ${DICT.size}`);
+    document.getElementById('msg').textContent = "Dictionary ready!";
+    document.getElementById('msg').style.color = "var(--green)";
     
-    // Start the game
     resetGame();
   } catch (e) {
-    console.error("Dictionary load failed:", e);
-    document.getElementById('msg').innerHTML = 
-      'Dictionary failed to load.<br>Check console (F12) for details.';
+    console.error("❌ Dictionary load failed:", e);
+    document.getElementById('msg').innerHTML = 'Word list failed to load.<br>Check console (F12) and try refreshing.';
     document.getElementById('msg').style.color = "red";
   }
 }
@@ -167,10 +165,9 @@ function handleInteraction(e) {
         const lastIdx = parseInt(activePath[activePath.length - 1]);
         const currIdx = parseInt(idx);
         const rowDiff = Math.abs(Math.floor(lastIdx/6) - Math.floor(currIdx/6));
-        const colDiff = Math.abs((lastIdx%6) - (currIdx%6));
+        const colDiff = Math.abs((lastIdx % 6) - (currIdx % 6));
         if (rowDiff > 1 || colDiff > 1) return;
       }
-     
       activePath.push(idx);
       target.classList.add('active');
       updateTray();
@@ -197,7 +194,7 @@ function submitWord() {
   if (DICT.has(word) && !foundWords.has(word)) {
     foundWords.add(word);
     document.getElementById('wordCount').textContent = foundWords.size;
-    msg.textContent = "NICE!";
+    msg.textContent = "NICE! +" + word.toUpperCase();
     msg.style.color = "var(--green)";
   } else {
     msg.textContent = foundWords.has(word) ? "ALREADY FOUND" : "NOT IN LIST";
@@ -211,16 +208,16 @@ function cleanup() {
   document.querySelectorAll('.tile').forEach(t => t.classList.remove('active'));
   activePath = [];
   document.getElementById('tray').textContent = "DRAG TO CONNECT";
-  setTimeout(() => { document.getElementById('msg').textContent = ""; }, 1500);
+  setTimeout(() => { document.getElementById('msg').textContent = ""; }, 1800);
 }
 
-// Drag event listeners
+// Event listeners
 window.addEventListener('mousedown', () => isDragging = true);
 window.addEventListener('touchstart', () => isDragging = true);
 window.addEventListener('mousemove', handleInteraction);
 window.addEventListener('touchmove', handleInteraction);
-window.addEventListener('mouseup', () => { if(isDragging) { isDragging = false; submitWord(); } });
-window.addEventListener('touchend', () => { if(isDragging) { isDragging = false; submitWord(); } });
+window.addEventListener('mouseup', () => { if (isDragging) { isDragging = false; submitWord(); } });
+window.addEventListener('touchend', () => { if (isDragging) { isDragging = false; submitWord(); } });
 
 function resetGame() {
   foundWords.clear();
@@ -238,7 +235,6 @@ function startTimer() {
     let m = Math.floor(timeLeft / 60);
     let s = timeLeft % 60;
     timerDisplay.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
-    
     if (timeLeft <= 0 || !gameActive) {
       clearInterval(id);
       gameActive = false;
@@ -247,7 +243,7 @@ function startTimer() {
   }, 1000);
 }
 
-// Start the app
+// Initialize
 loadDictionary();
 </script>
 </body>
