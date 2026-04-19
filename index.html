@@ -1,122 +1,146 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Words Galore</title>
-  <style>
-    :root {
-      --ink: #25324a;
-      --pink: #ff5fa2;
-      --gold: #ffbf3f;
-      --green: #22c878;
-    }
-
-    * { box-sizing: border-box; touch-action: none; } /* Prevents page from scrolling while you drag */
-
-    body {
-      margin: 0;
-      font-family: sans-serif;
-      background: #fdfdfd;
-      display: flex;
-      justify-content: center;
-      padding: 10px;
-      height: 100vh;
-      overflow: hidden;
-    }
-
-    .wrap {
-      width: 100%;
-      max-width: 600px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .stats {
-      display: flex;
-      justify-content: space-around;
-      background: #fff;
-      padding: 10px;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      font-weight: bold;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(6, 1fr);
-      gap: 6px;
-      flex: 1;
-    }
-
-    .tile {
-      aspect-ratio: 1/1;
-      background: #fff;
-      border: 2px solid #eee;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      font-weight: 800;
-      user-select: none;
-      pointer-events: auto; /* Ensures tiles are "seen" by the drag script */
-    }
-
-    .tile.active {
-      background: var(--gold);
-      color: #fff;
-      border-color: #f3a61c;
-      transform: scale(0.95);
-    }
-
-    .current-word-display {
-      background: #eee;
-      padding: 10px;
-      text-align: center;
-      border-radius: 8px;
-      font-size: 1.2rem;
-      font-weight: 800;
-      min-height: 45px;
-      letter-spacing: 2px;
-    }
-
-    .controls { display: flex; gap: 10px; }
-    .btn {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 8px;
-      color: #fff;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    .btn-new { background: var(--pink); }
-
-    #msg { text-align: center; font-weight: bold; height: 20px; }
-  </style>
-</head>
-<body>
-
-<div class="wrap">
-  <div class="stats">
-    <div>Time: <span id="timer">1:30</span></div>
-    <div>Words: <span id="wordCount">0</span></div>
-  </div>
-
-  <div class="current-word-display" id="tray">SELECT LETTERS</div>
-
-  <div class="grid" id="grid"></div>
-
-  <div id="msg"></div>
-
-  <div class="controls">
-    <button class="btn btn-new" onclick="resetGame()">New Game</button>
-  </div>
-</div>
-
 <script>
+// Huge dictionary will be loaded from your words.txt
+let DICT = new Set();
+
+async function loadDictionary() {
+  try {
+    const res = await fetch('words.txt');   // or use the full raw GitHub URL if you prefer
+    if (!res.ok) throw new Error("File not found");
+    
+    const text = await res.text();
+    DICT = new Set(
+      text.split('\n')
+          .map(w => w.trim().toLowerCase())
+          .filter(w => w.length >= 3 && /^[a-z]+$/.test(w))   // only clean 3+ letter words
+    );
+    
+    console.log(`Dictionary loaded successfully! Total words: ${DICT.size}`);
+    
+    // Start the game only after dictionary is ready
+    resetGame();
+  } catch (e) {
+    console.error("Failed to load words.txt:", e);
+    alert("Could not load the word list. Make sure words.txt is in the same folder as your HTML file.");
+  }
+}
+
+const TILES = "AAAAAAAAAEEEEEEEEEEEEIIIIIIIIIOOOOOOOOUUUUDDDDGGGGBCMPFHVWYKJXQZ".split('');
+let activePath = [];
+let foundWords = new Set();
+let isDragging = false;
+let gameActive = false;
+let timeLeft = 90;
+
+function createBoard() {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  for (let i = 0; i < 36; i++) {
+    const letter = TILES[Math.floor(Math.random() * TILES.length)];
+    const div = document.createElement('div');
+    div.className = 'tile';
+    div.textContent = letter;
+    div.dataset.index = i;
+    grid.appendChild(div);
+  }
+}
+
+function handleInteraction(e) {
+  if (!gameActive || !isDragging) return;
+ 
+  const x = e.touches ? e.touches[0].clientX : e.clientX;
+  const y = e.touches ? e.touches[0].clientY : e.clientY;
+  const target = document.elementFromPoint(x, y);
+  if (target && target.classList.contains('tile')) {
+    const idx = target.dataset.index;
+    if (!activePath.includes(idx)) {
+      if (activePath.length > 0) {
+        const lastIdx = parseInt(activePath[activePath.length - 1]);
+        const currIdx = parseInt(idx);
+        const rowDiff = Math.abs(Math.floor(lastIdx/6) - Math.floor(currIdx/6));
+        const colDiff = Math.abs((lastIdx%6) - (currIdx%6));
+        if (rowDiff > 1 || colDiff > 1) return;
+      }
+     
+      activePath.push(idx);
+      target.classList.add('active');
+      updateTray();
+    }
+  }
+}
+
+function updateTray() {
+  const word = activePath.map(idx => 
+    document.querySelector(`[data-index="${idx}"]`).textContent
+  ).join('');
+  document.getElementById('tray').textContent = word;
+}
+
+function submitWord() {
+  const word = document.getElementById('tray').textContent.toLowerCase().trim();
+  const msg = document.getElementById('msg');
+ 
+  if (word.length < 3) {
+    msg.textContent = "";
+    // Clean up
+    cleanup();
+    return;
+  }
+
+  if (DICT.has(word) && !foundWords.has(word)) {
+    foundWords.add(word);
+    document.getElementById('wordCount').textContent = foundWords.size;
+    msg.textContent = "NICE!";
+    msg.style.color = "var(--green)";
+  } else {
+    msg.textContent = foundWords.has(word) ? "ALREADY FOUND" : "NOT IN LIST";
+    msg.style.color = "var(--pink)";
+  }
+ 
+  cleanup();
+}
+
+function cleanup() {
+  document.querySelectorAll('.tile').forEach(t => t.classList.remove('active'));
+  activePath = [];
+  document.getElementById('tray').textContent = "DRAG TO CONNECT";
+  setTimeout(() => { document.getElementById('msg').textContent = ""; }, 1200);
+}
+
+// Event Listeners
+window.addEventListener('mousedown', () => isDragging = true);
+window.addEventListener('touchstart', () => isDragging = true);
+window.addEventListener('mousemove', handleInteraction);
+window.addEventListener('touchmove', handleInteraction);
+window.addEventListener('mouseup', () => { if(isDragging) { isDragging = false; submitWord(); } });
+window.addEventListener('touchend', () => { if(isDragging) { isDragging = false; submitWord(); } });
+
+function resetGame() {
+  foundWords.clear();
+  document.getElementById('wordCount').textContent = '0';
+  timeLeft = 90;
+  gameActive = true;
+  createBoard();
+  startTimer();
+}
+
+function startTimer() {
+  const timerDisplay = document.getElementById('timer');
+  const id = setInterval(() => {
+    timeLeft--;
+    let m = Math.floor(timeLeft / 60);
+    let s = timeLeft % 60;
+    timerDisplay.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
+    if (timeLeft <= 0 || !gameActive) {
+      clearInterval(id);
+      gameActive = false;
+      alert(`Time's up! You found ${foundWords.size} words.`);
+    }
+  }, 1000);
+}
+
+// === START THE GAME ===
+loadDictionary();
+</script>
 // Word list from your words.txt file
 const WORDS = ["able","about","above","accept","across","act","action","add","after","again","age","ago","agree","air","all","allow","almost","along","also","always","am","among","amount","and","animal","another","answer","any","appear","are","area","around","arrive","art","as","ask","at","away","baby","back","bad","bag","ball","bank","base","be","bear","beat","beauty","because","become","bed","been","before","begin","behind","believe","best","better","between","big","bird","bit","black","blue","boat","body","book","both","box","boy","bring","build","busy","but","buy","by","call","came","can","car","care","carry","case","cat","cause","center","change","check","child","city","class","clean","clear","close","cold","come","common","complete","contain","continue","cool","copy","corn","cost","could","country","course","cover","create","cut","dark","data","day","dead","deal","decide","deep","develop","did","different","do","dog","done","door","down","draw","dream","drive","dry","during","each","early","earth","easy","eat","edge","end","enough","even","ever","every","example","eye","face","fact","fall","family","far","farm","fast","father","feel","feet","few","field","figure","fill","final","find","fine","fire","first","fish","fit","five","floor","follow","food","for","force","form","found","four","free","friend","from","front","full","fun","game","gave","get","girl","give","go","gold","good","got","great","green","ground","group","grow","had","half","hand","happen","hard","has","have","he","head","hear","heat","help","her","here","high","him","his","home","horse","hot","hour","house","how","however","idea","if","important","in","interest","into","is","it","job","join","just","keep","kind","king","knew","know","land","large","last","late","later","laugh","lead","learn","leave","left","less","let","letter","life","light","like","line","list","listen","little","live","long","look","lot","love","low","made","make","man","many","may","me","mean","measure","men","might","mile","mind","miss","more","most","mother","move","much","must","my","name","near","need","never","new","next","night","no","not","note","nothing","now","number","of","off","often","old","on","once","one","only","open","or","order","other","our","out","over","own","page","paper","part","pass","past","pay","people","perhaps","person","place","plan","play","point","power","press","problem","program","provide","put","question","quick","quite","rain","ran","reach","read","ready","real","reason","receive","record","red","remember","rest","result","right","river","road","rock","room","run","said","same","saw","say","school","sea","second","see","seem","self","send","set","several","she","should","show","side","simple","since","small","so","some","something","soon","sound","south","space","stand","start","state","stay","step","still","stop","story","street","strong","study","such","sun","system","take","talk","tell","ten","term","than","that","the","their","them","then","there","these","they","thing","think","this","those","thought","three","through","time","to","together","told","too","took","top","toward","town","tree","try","turn","two","under","until","up","upon","us","use","usually","very","want","war","was","watch","water","way","we","week","well","went","were","what","when","where","which","while","white","who","why","will","with","word","work","world","would","write","year","yes","yet","you","young","zip","zoo","zoom","zig","zag"];
 const DICT = new Set(WORDS);
