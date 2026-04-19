@@ -128,14 +128,8 @@
 </div>
 
 <script>
-// Much better balanced letter distribution (closer to real English)
-const TILES = [
-  ...'E'.repeat(8), 'A'.repeat(7), 'I'.repeat(6), 'O'.repeat(6), 'U'.repeat(3),
-  ...'R'.repeat(7), 'T'.repeat(7), 'N'.repeat(6), 'S'.repeat(6), 'L'.repeat(5),
-  ...'D'.repeat(4), 'C'.repeat(4), 'M'.repeat(3), 'B'.repeat(3), 'H'.repeat(3),
-  ...'G'.repeat(3), 'P'.repeat(3), 'F'.repeat(2), 'W'.repeat(2), 'Y'.repeat(2),
-  'K','V','X','J','Q','Z'
-];
+// Properly balanced English letter frequencies (fixed spreading)
+const TILES = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIJKLLLLMMNNNNNNOOOPPPQRRRRRRSSSSTTTTTTUUUVVWWXXYYYZ".split('');
 
 let DICT = new Set();
 let activePath = [];
@@ -185,19 +179,17 @@ function createBoard() {
 function shuffleBoard() {
   if (!gameActive) return;
   
-  // Visual shuffle effect
   const tiles = document.querySelectorAll('.tile');
   tiles.forEach(tile => {
     tile.style.transition = 'transform 0.3s';
-    tile.style.transform = 'rotate(20deg) scale(0.8)';
+    tile.style.transform = 'rotate(15deg) scale(0.85)';
   });
   
   setTimeout(() => {
-    createBoard();  // Fully refresh the board with new letters
+    createBoard();
     activePath = [];
     document.getElementById('tray').textContent = "DRAG TO FORM WORDS";
     
-    // Reset visual effect
     tiles.forEach(tile => {
       tile.style.transition = 'all 0.2s ease';
       tile.style.transform = '';
@@ -249,7 +241,7 @@ function submitWord() {
     msg.textContent = `NICE! + ${word.toUpperCase()}`;
     msg.style.color = "var(--green)";
 
-    // Refill only the used tiles
+    // Refill used tiles
     activePath.forEach(idx => {
       boardLetters[idx] = TILES[Math.floor(Math.random() * TILES.length)];
       const tile = document.querySelector(`[data-index="${idx}"]`);
@@ -302,7 +294,7 @@ function startTimer() {
   }, 1000);
 }
 
-// Start
+// Start the game
 loadDictionary();
 </script>
 </body>
