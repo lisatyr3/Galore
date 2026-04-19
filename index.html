@@ -6,21 +6,15 @@
   <title>Words Galore</title>
   <style>
     :root {
-      --bg-a: #fff6b8;
-      --bg-b: #ffd7ee;
-      --bg-c: #d6f3ff;
       --ink: #25324a;
       --card: rgba(255,255,255,0.94);
       --pink: #ff5fa2;
-      --blue: #49c7f2;
       --green: #22c878;
-      --purple: #6e7ff2;
       --gold: #ffbf3f;
-      --bad: #ef476f;
       --shadow: 0 8px 24px rgba(37,50,74,0.12);
     }
 
-    * { box-sizing: border-box; }
+    * { box-sizing: border-box; touch-action: none; }
 
     body {
       margin: 0;
@@ -29,129 +23,137 @@
       min-height: 100vh;
       background: linear-gradient(135deg, #fffbe2, #ffe8f6, #e7f8ff);
       padding: 10px;
+      overflow: hidden; /* Prevents body scroll during drag */
     }
 
     .wrap {
-      max-width: 850px;
+      max-width: 800px;
       margin: 0 auto;
       background: var(--card);
       border-radius: 20px;
       box-shadow: var(--shadow);
       padding: 10px;
-      border: 1px solid rgba(255,255,255,0.8);
-      backdrop-filter: blur(5px);
+      display: flex;
+      flex-direction: column;
+      max-height: 98vh;
     }
 
     .hero {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 5px;
     }
 
-    h1 { margin: 0; font-size: 1.5rem; }
+    h1 { margin: 0; font-size: 1.4rem; }
 
     .stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-bottom: 10px;
+      gap: 6px;
+      margin-bottom: 8px;
     }
 
     .stat {
       background: #fff;
-      border-radius: 12px;
-      padding: 6px;
+      border-radius: 10px;
+      padding: 5px;
       text-align: center;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
 
-    .stat-label { font-size: 0.65rem; color: #6d7689; display: block; text-transform: uppercase; }
-    .stat-value { font-size: 1.1rem; font-weight: 800; }
+    .stat-label { font-size: 0.6rem; color: #6d7689; display: block; text-transform: uppercase; }
+    .stat-value { font-size: 1rem; font-weight: 800; }
 
     .layout {
       display: grid;
-      grid-template-columns: 1fr 220px;
-      gap: 15px;
+      grid-template-columns: 1fr 200px;
+      gap: 12px;
+      flex: 1;
+      min-height: 0;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      gap: 6px;
-      touch-action: none;
+      gap: 5px;
+      user-select: none;
     }
 
     .tile {
       aspect-ratio: 1/1;
-      border: 0;
-      border-radius: 8px;
+      border-radius: 6px;
       background: #fff;
-      font-size: 1.3rem;
+      font-size: 1.2rem;
       font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+      box-shadow: 0 3px 6px rgba(0,0,0,0.05);
       display: flex;
       align-items: center;
       justify-content: center;
-      user-select: none;
+      cursor: pointer;
+      pointer-events: auto;
     }
 
-    .tile.selected { background: var(--gold); color: #fff; }
+    .tile.selected { background: var(--gold); color: #fff; transform: scale(0.95); }
 
     .current-box {
       margin-bottom: 8px;
       background: #eee;
-      border-radius: 10px;
-      padding: 8px;
+      border-radius: 8px;
+      padding: 5px;
       text-align: center;
       font-weight: 800;
-      min-height: 40px;
+      min-height: 35px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       letter-spacing: 2px;
     }
 
     .btn {
       border: 0;
-      border-radius: 20px;
-      padding: 10px 15px;
+      border-radius: 15px;
+      padding: 8px 12px;
       font-weight: 800;
       color: #fff;
       cursor: pointer;
-      transition: opacity 0.2s;
+      font-size: 0.8rem;
     }
 
-    .btn:active { opacity: 0.8; }
     .btn-pink { background: var(--pink); }
-    .btn-green { background: var(--green); }
+
+    .word-list-container {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
 
     .word-list {
       list-style: none;
       padding: 0;
       margin: 0;
-      max-height: 320px;
       overflow-y: auto;
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5px;
+      grid-template-columns: 1fr;
+      gap: 4px;
+      flex: 1;
     }
 
     .word-list li { 
       background: #fff; 
-      padding: 5px; 
-      border-radius: 5px; 
-      font-size: 0.8rem; 
+      padding: 4px; 
+      border-radius: 4px; 
+      font-size: 0.75rem; 
       font-weight: bold; 
       text-align: center;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+      border-bottom: 1px solid #eee;
     }
 
+    #message { font-weight: bold; height: 18px; font-size: 0.8rem; text-align: center; margin-top: 5px; }
+
     @media (max-width: 600px) {
-      .layout { grid-template-columns: 1fr; }
-      .word-list { max-height: 150px; }
+      .layout { grid-template-columns: 1fr; grid-template-rows: auto 120px; }
     }
   </style>
 </head>
@@ -159,7 +161,7 @@
   <div class="wrap">
     <div class="hero">
       <h1>Words Galore</h1>
-      <button class="btn btn-pink" id="newGameBtn">New Game</button>
+      <button class="btn btn-pink" onclick="startNewGame()">New Game</button>
     </div>
 
     <div class="stats">
@@ -171,59 +173,34 @@
 
     <div class="layout">
       <section>
-        <div class="current-box" id="currentWord">SELECT LETTERS</div>
+        <div class="current-box" id="currentWord">DRAG TO CONNECT</div>
         <div class="grid" id="grid"></div>
-        <div style="margin-top:10px; display:flex; gap:10px;">
-            <button class="btn btn-green" style="flex:1" id="submitBtn">SUBMIT</button>
-            <button class="btn btn-pink" style="flex:1" id="shuffleBtn">SHUFFLE</button>
-        </div>
-        <div id="message" style="margin-top:8px; font-weight:bold; height:20px; font-size:0.9rem; text-align:center;"></div>
+        <div id="message"></div>
       </section>
 
-      <aside>
-        <h3 style="margin: 0 0 10px 0; font-size: 1rem;">FOUND WORDS</h3>
+      <div class="word-list-container">
+        <h3 style="margin: 0 0 5px 0; font-size: 0.9rem;">FOUND</h3>
         <ul class="word-list" id="wordList"></ul>
-      </aside>
+      </div>
     </div>
   </div>
 
   <script>
     const BOARD_SIZE = 6;
-    const ROUND_SECONDS = 90;
     let DICTIONARY = new Set();
-    const LETTER_POOL = ['A','A','A','A','E','E','E','E','I','I','I','O','O','O','U','U','L','L','N','N','R','R','S','S','T','T','D','D','G','G','B','C','F','H','M','P','V','W','Y','K','J','X','Q','Z'];
-
-    const gridEl = document.getElementById('grid');
-    const currentWordEl = document.getElementById('currentWord');
-    const messageEl = document.getElementById('message');
-    const wordListEl = document.getElementById('wordList');
-    const timeDisplayEl = document.getElementById('timeDisplay');
-    const wordsDisplayEl = document.getElementById('wordsDisplay');
-    const scoreDisplayEl = document.getElementById('scoreDisplay');
-    const bestDisplayEl = document.getElementById('bestDisplay');
-    const submitBtn = document.getElementById('submitBtn');
-    const shuffleBtn = document.getElementById('shuffleBtn');
-    const newGameBtn = document.getElementById('newGameBtn');
+    const LETTER_POOL = 'AAAAAAAAAEEEEEEEEEEEEIIIIIIIIIOOOOOOOOUUUUDDDDGGGGBCMPFHVWYK JXQZ'.replace(/ /g,'').split('');
 
     let board = [];
     let selectedPath = [];
     let foundWords = new Set();
-    let score = 0;
-    let timeLeft = ROUND_SECONDS;
-    let timerId = null;
-    let gameActive = false;
-    let pointerDown = false;
-    let bestScore = 0;
+    let score = 0, timeLeft = 90, bestScore = 0;
+    let timerId = null, gameActive = false, isDragging = false;
 
-    function loadWords() {
-      // Full word bank from your provided list [cite: 1]
-      const manualWords = [
-        'able','about','above','accept','across','action','added','after','again','agree','ahead','allow','almost','along','already','also','always','among','animal','another','answer','any','appear','area','around','arrive','away','back','ball','bank','base','bear','beat','beauty','because','become','been','before','begin','behind','believe','best','better','between','bird','black','blue','boat','body','book','both','bring','build','busy','call','came','care','carry','case','cause','center','change','check','child','city','class','clean','clear','close','cold','come','common','complete','contain','continue','cool','copy','corn','cost','could','country','course','cover','create','dark','data','dead','deal','decide','deep','develop','different','done','door','down','draw','dream','drive','during','early','earth','easy','edge','enough','even','ever','every','example','face','fact','fall','family','far','farm','fast','father','feel','feet','field','figure','fill','final','find','fine','fire','first','fish','five','floor','follow','food','force','form','found','four','free','friend','from','front','full','game','gave','girl','give','gold','good','great','green','ground','group','grow','half','hand','happen','hard','have','head','hear','heat','help','here','high','home','horse','hour','house','however','idea','important','interest','into','join','just','keep','kind','king','knew','know','land','large','last','late','later','laugh','lead','learn','leave','left','less','letter','life','light','like','line','list','listen','little','live','long','look','love','made','make','many','mean','measure','might','mile','mind','miss','more','most','mother','move','much','must','name','near','need','never','next','night','note','nothing','now','number','often','once','only','open','order','other','outer','over','owner','page','paper','part','pass','past','people','perhaps','person','place','plan','play','point','power','press','problem','program','provide','question','quick','quite','rain','reach','read','ready','real','reason','receive','record','remember','rest','result','right','river','road','rock','room','said','same','school','second','seem','self','send','several','should','show','side','simple','since','small','some','something','soon','sound','south','space','stand','start','state','stay','step','still','stop','story','street','strong','study','such','sun','system','take','talk','tell','ten','term','than','that','the','their','them','then','there','these','they','thing','think','this','those','thought','three','through','time','together','told','too','took','top','toward','town','tree','try','turn','two','under','until','upon','use','usually','very','want','war','was','watch','water','way','week','well','went','were','what','when','where','which','while','white','who','why','will','with','word','work','world','would','write','year','yes','yet','you','young','zip','zoo','zoom','zig','zag'
-      ];
-      // Filter out 2-letter words as requested
-      const filtered = manualWords.filter(w => w.length >= 3);
-      DICTIONARY = new Set(filtered.map(w => w.toLowerCase()));
-      startNewGame();
+    // Load word bank from your file content [cite: 1]
+    function initDictionary() {
+      const words = ["able","about","above","accept","across","action","added","after","again","agree","ahead","allow","almost","along","already","also","always","among","amount","animal","another","answer","appear","area","around","arrive","away","baby","back","ball","bank","base","bear","beat","beauty","because","become","been","before","begin","behind","believe","best","better","between","bird","black","blue","boat","body","book","both","bring","build","busy","call","came","care","carry","case","cause","center","change","check","child","city","class","clean","clear","close","cold","come","common","complete","contain","continue","cool","copy","corn","cost","could","country","course","cover","create","dark","data","dead","deal","decide","deep","develop","done","door","down","draw","dream","drive","during","early","earth","easy","edge","enough","even","ever","every","example","face","fact","fall","family","farm","fast","father","feel","feet","field","figure","fill","final","find","fine","fire","first","fish","five","floor","follow","food","force","form","found","four","free","friend","from","front","full","game","gave","girl","give","gold","good","great","green","ground","group","grow","half","hand","happen","hard","have","head","hear","heat","help","here","high","home","horse","hour","house","however","idea","important","interest","into","join","just","keep","kind","king","knew","know","land","large","last","late","later","laugh","lead","learn","leave","left","less","letter","life","light","like","line","list","listen","little","live","long","look","love","made","make","many","mean","measure","might","mile","mind","miss","more","most","mother","move","much","must","name","near","need","never","next","night","note","nothing","number","often","once","only","open","order","other","outer","over","owner","page","paper","part","pass","past","people","perhaps","person","place","plan","play","point","power","press","problem","program","provide","question","quick","quite","rain","reach","read","ready","real","reason","receive","record","remember","rest","result","right","river","road","rock","room","said","same","school","second","seem","self","send","several","should","show","side","simple","since","small","some","something","soon","sound","south","space","stand","start","state","stay","step","still","stop","story","street","strong","study","such","system","take","talk","tell","term","than","that","their","them","then","there","these","they","thing","think","this","those","thought","three","through","time","together","told","toward","town","tree","turn","under","until","upon","usually","very","want","watch","water","way","week","well","went","were","what","when","where","which","while","white","will","with","word","work","world","would","write","year","young","zip","zoo","zoom","zig","zag"];
+      // Only keep words 3 letters or longer [cite: 1]
+      DICTIONARY = new Set(words.filter(w => w.length >= 3).map(w => w.toLowerCase()));
     }
 
     function buildBoard() {
@@ -233,122 +210,104 @@
     }
 
     function renderBoard() {
-      gridEl.innerHTML = '';
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
       board.forEach((row, r) => {
         row.forEach((letter, c) => {
           const tile = document.createElement('div');
           tile.className = 'tile' + (selectedPath.some(p => p.r === r && p.c === c) ? ' selected' : '');
           tile.textContent = letter;
-          
-          tile.onpointerdown = (e) => {
-            if(!gameActive) return;
-            tile.releasePointerCapture(e.pointerId);
-            pointerDown = true;
-            selectedPath = [{r,c}];
-            renderBoard();
-          };
-          
-          tile.onpointerenter = () => {
-            if(!gameActive || !pointerDown) return;
-            const alreadySelected = selectedPath.some(p => p.r === r && p.c === c);
-            if (!alreadySelected) {
-              const last = selectedPath[selectedPath.length - 1];
-              if (Math.abs(last.r - r) <= 1 && Math.abs(last.c - c) <= 1) {
-                selectedPath.push({r,c});
-                renderBoard();
-              }
-            }
-          };
-          gridEl.appendChild(tile);
+          tile.dataset.r = r;
+          tile.dataset.c = c;
+          grid.appendChild(tile);
         });
       });
-      const word = selectedPath.map(p => board[p.r][p.c]).join('');
-      currentWordEl.textContent = word || 'SELECT LETTERS';
+      const current = selectedPath.map(p => board[p.r][p.c]).join('');
+      document.getElementById('currentWord').textContent = current || 'DRAG TO CONNECT';
     }
 
-    function submitWord() {
-      if(!gameActive || selectedPath.length === 0) return;
+    function handleMove(e) {
+      if (!isDragging || !gameActive) return;
+      const x = e.touches ? e.touches[0].clientX : e.clientX;
+      const y = e.touches ? e.touches[0].clientY : e.clientY;
+      const target = document.elementFromPoint(x, y);
       
-      const word = selectedPath.map(p => board[p.r][p.c]).join('').toLowerCase();
-      
-      if (word.length < 3) {
-        messageEl.style.color = 'var(--bad)';
-        messageEl.textContent = "3+ letters required!";
-      } else if (foundWords.has(word)) {
-        messageEl.style.color = 'var(--purple)';
-        messageEl.textContent = "Already found!";
-      } else if (DICTIONARY.has(word)) {
-        foundWords.add(word);
-        score++; // 1 point per word logic
-        const li = document.createElement('li');
-        li.textContent = word.toUpperCase();
-        wordListEl.prepend(li);
+      if (target && target.classList.contains('tile')) {
+        const r = parseInt(target.dataset.r);
+        const c = parseInt(target.dataset.c);
+        const alreadyInPath = selectedPath.find(p => p.r === r && p.c === c);
         
-        messageEl.style.color = 'var(--green)';
-        messageEl.textContent = "Nice!";
-        wordsDisplayEl.textContent = foundWords.size;
-        scoreDisplayEl.textContent = score;
-      } else {
-        messageEl.style.color = 'var(--bad)';
-        messageEl.textContent = "Not in word bank";
+        if (!alreadyInPath) {
+          const last = selectedPath[selectedPath.length - 1];
+          if (!last || (Math.abs(last.r - r) <= 1 && Math.abs(last.c - c) <= 1)) {
+            selectedPath.push({r, c});
+            renderBoard();
+          }
+        }
+      }
+    }
+
+    function handleEnd() {
+      if (!isDragging) return;
+      isDragging = false;
+      const word = selectedPath.map(p => board[p.r][p.c]).join('').toLowerCase();
+      const msg = document.getElementById('message');
+
+      if (word.length >= 3) {
+        if (DICTIONARY.has(word) && !foundWords.has(word)) {
+          foundWords.add(word);
+          score++;
+          const li = document.createElement('li');
+          li.textContent = word.toUpperCase();
+          document.getElementById('wordList').prepend(li);
+          document.getElementById('wordsDisplay').textContent = foundWords.size;
+          document.getElementById('scoreDisplay').textContent = score;
+          msg.textContent = "NICE!";
+          msg.style.color = "var(--green)";
+        } else if (foundWords.has(word)) {
+          msg.textContent = "ALREADY FOUND";
+          msg.style.color = "var(--gold)";
+        } else {
+          msg.textContent = "NOT IN LIST";
+          msg.style.color = "var(--pink)";
+        }
       }
       
       selectedPath = [];
       renderBoard();
-      setTimeout(() => { messageEl.textContent = ""; }, 1500);
+      setTimeout(() => msg.textContent = "", 1000);
     }
-
-    window.onpointerup = () => {
-      if(pointerDown) {
-        submitWord();
-        pointerDown = false;
-      }
-    };
 
     function startNewGame() {
-      foundWords = new Set();
-      score = 0;
-      timeLeft = ROUND_SECONDS;
-      wordListEl.innerHTML = '';
-      wordsDisplayEl.textContent = '0';
-      scoreDisplayEl.textContent = '0';
-      gameActive = true;
-      selectedPath = [];
-      buildBoard();
-      renderBoard();
-      
-      if(timerId) clearInterval(timerId);
+      foundWords.clear(); score = 0; timeLeft = 90;
+      document.getElementById('wordList').innerHTML = '';
+      document.getElementById('wordsDisplay').textContent = '0';
+      document.getElementById('scoreDisplay').textContent = '0';
+      gameActive = true; buildBoard(); renderBoard();
+      if (timerId) clearInterval(timerId);
       timerId = setInterval(() => {
         timeLeft--;
-        const mins = Math.floor(timeLeft / 60);
-        const secs = timeLeft % 60;
-        timeDisplayEl.textContent = `${mins}:${secs.toString().padStart(2,'0')}`;
-        
-        if(timeLeft <= 0) {
-          clearInterval(timerId);
-          gameActive = false;
-          if(score > bestScore) {
-            bestScore = score;
-            bestDisplayEl.textContent = bestScore;
-          }
-          alert(`Game Over! You found ${foundWords.size} words.`);
+        const m = Math.floor(timeLeft/60), s = timeLeft%60;
+        document.getElementById('timeDisplay').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+        if (timeLeft <= 0) {
+          clearInterval(timerId); gameActive = false;
+          if (score > bestScore) { bestScore = score; document.getElementById('bestDisplay').textContent = score; }
+          alert("Time's up!");
         }
       }, 1000);
     }
 
-    shuffleBtn.onclick = () => { 
-      if(gameActive) {
-        buildBoard(); 
-        selectedPath = [];
-        renderBoard(); 
-      }
-    };
-    
-    submitBtn.onclick = submitWord;
-    newGameBtn.onclick = startNewGame;
+    // Event Listeners for Dragging
+    const grid = document.getElementById('grid');
+    grid.addEventListener('mousedown', () => { if(gameActive) isDragging = true; });
+    grid.addEventListener('touchstart', (e) => { if(gameActive) { isDragging = true; handleMove(e); } }, {passive: false});
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('touchmove', handleMove, {passive: false});
+    window.addEventListener('mouseup', handleEnd);
+    window.addEventListener('touchend', handleEnd);
 
-    // Start everything
-    loadWords();
+    initDictionary();
+    startNewGame();
   </script>
 </body>
 </html>
