@@ -122,8 +122,22 @@
 </div>
 
 <script>
-// Huge public dictionary
+// More balanced English letter frequencies (fewer excess vowels)
+const TILES = [
+  ...'E'.repeat(12), 'A'.repeat(9), 'I'.repeat(9), 'O'.repeat(8), 'U'.repeat(4),
+  ...'R'.repeat(6), 'T'.repeat(6), 'N'.repeat(6), 'S'.repeat(6), 'L'.repeat(4),
+  ...'D'.repeat(4), 'C'.repeat(3), 'M'.repeat(3), 'B'.repeat(2), 'H'.repeat(2),
+  ...'G'.repeat(2), 'P'.repeat(2), 'F'.repeat(2), 'W'.repeat(2), 'Y'.repeat(2),
+  'K','V','X','J','Q','Z'
+];
+
 let DICT = new Set();
+let activePath = [];
+let foundWords = new Set();
+let isDragging = false;
+let gameActive = false;
+let timeLeft = 90;
+let boardLetters = [];
 
 async function loadDictionary() {
   try {
@@ -144,14 +158,6 @@ async function loadDictionary() {
     document.getElementById('msg').style.color = "red";
   }
 }
-
-const TILES = "AAAAAAAAAEEEEEEEEEEEEIIIIIIIIIOOOOOOOOUUUUDDDDGGGGBCMPFHVWYKJXQZ".split('');
-let activePath = [];
-let foundWords = new Set();
-let isDragging = false;
-let gameActive = false;
-let timeLeft = 90;
-let boardLetters = [];   // Now we track the board state for refilling
 
 function createBoard() {
   const grid = document.getElementById('grid');
@@ -214,7 +220,7 @@ function submitWord() {
     msg.textContent = `NICE! + ${word.toUpperCase()}`;
     msg.style.color = "var(--green)";
 
-    // REFILL the used letters with new ones
+    // Refill used tiles with fresh letters
     activePath.forEach(idx => {
       boardLetters[idx] = TILES[Math.floor(Math.random() * TILES.length)];
       const tile = document.querySelector(`[data-index="${idx}"]`);
@@ -267,7 +273,7 @@ function startTimer() {
   }, 1000);
 }
 
-// Start
+// Start the game
 loadDictionary();
 </script>
 </body>
