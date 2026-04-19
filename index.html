@@ -11,6 +11,7 @@
       --gold: #ffbf3f;
       --green: #22c878;
       --blue: #6e7ff2;
+      --purple: #9b59b6;
     }
     * { box-sizing: border-box; touch-action: none; }
     body {
@@ -84,7 +85,10 @@
       color: var(--blue);
       box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
-    .controls { display: flex; gap: 12px; }
+    .controls {
+      display: flex;
+      gap: 12px;
+    }
     .btn {
       flex: 1;
       padding: 14px;
@@ -95,10 +99,11 @@
       font-size: 1.1rem;
       cursor: pointer;
       box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      transition: transform 0.2s;
+      transition: all 0.2s;
     }
     .btn:active { transform: scale(0.95); }
     .btn-new { background: var(--pink); }
+    .btn-shuffle { background: var(--purple); }
     #msg { 
       text-align: center; 
       font-weight: bold; 
@@ -117,17 +122,18 @@
   <div class="grid" id="grid"></div>
   <div id="msg"></div>
   <div class="controls">
+    <button class="btn btn-shuffle" onclick="shuffleBoard()">Shuffle Board</button>
     <button class="btn btn-new" onclick="resetGame()">New Game</button>
   </div>
 </div>
 
 <script>
-// More balanced English letter frequencies (fewer excess vowels)
+// Much better balanced letter distribution (closer to real English)
 const TILES = [
-  ...'E'.repeat(12), 'A'.repeat(9), 'I'.repeat(9), 'O'.repeat(8), 'U'.repeat(4),
-  ...'R'.repeat(6), 'T'.repeat(6), 'N'.repeat(6), 'S'.repeat(6), 'L'.repeat(4),
-  ...'D'.repeat(4), 'C'.repeat(3), 'M'.repeat(3), 'B'.repeat(2), 'H'.repeat(2),
-  ...'G'.repeat(2), 'P'.repeat(2), 'F'.repeat(2), 'W'.repeat(2), 'Y'.repeat(2),
+  ...'E'.repeat(8), 'A'.repeat(7), 'I'.repeat(6), 'O'.repeat(6), 'U'.repeat(3),
+  ...'R'.repeat(7), 'T'.repeat(7), 'N'.repeat(6), 'S'.repeat(6), 'L'.repeat(5),
+  ...'D'.repeat(4), 'C'.repeat(4), 'M'.repeat(3), 'B'.repeat(3), 'H'.repeat(3),
+  ...'G'.repeat(3), 'P'.repeat(3), 'F'.repeat(2), 'W'.repeat(2), 'Y'.repeat(2),
   'K','V','X','J','Q','Z'
 ];
 
@@ -176,6 +182,29 @@ function createBoard() {
   }
 }
 
+function shuffleBoard() {
+  if (!gameActive) return;
+  
+  // Visual shuffle effect
+  const tiles = document.querySelectorAll('.tile');
+  tiles.forEach(tile => {
+    tile.style.transition = 'transform 0.3s';
+    tile.style.transform = 'rotate(20deg) scale(0.8)';
+  });
+  
+  setTimeout(() => {
+    createBoard();  // Fully refresh the board with new letters
+    activePath = [];
+    document.getElementById('tray').textContent = "DRAG TO FORM WORDS";
+    
+    // Reset visual effect
+    tiles.forEach(tile => {
+      tile.style.transition = 'all 0.2s ease';
+      tile.style.transform = '';
+    });
+  }, 300);
+}
+
 function handleInteraction(e) {
   if (!gameActive || !isDragging) return;
  
@@ -220,7 +249,7 @@ function submitWord() {
     msg.textContent = `NICE! + ${word.toUpperCase()}`;
     msg.style.color = "var(--green)";
 
-    // Refill used tiles with fresh letters
+    // Refill only the used tiles
     activePath.forEach(idx => {
       boardLetters[idx] = TILES[Math.floor(Math.random() * TILES.length)];
       const tile = document.querySelector(`[data-index="${idx}"]`);
@@ -273,7 +302,7 @@ function startTimer() {
   }, 1000);
 }
 
-// Start the game
+// Start
 loadDictionary();
 </script>
 </body>
