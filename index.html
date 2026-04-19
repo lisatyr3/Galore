@@ -1,52 +1,85 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Words Galore</title>
 
 <style>
-:root {
-  --bg-a:#fff6b8; --bg-b:#ffd7ee; --bg-c:#d6f3ff;
-  --ink:#25324a; --card:rgba(255,255,255,0.94);
-  --pink:#ff5fa2; --blue:#49c7f2; --green:#22c878;
-  --purple:#6e7ff2; --gold:#ffbf3f;
-}
-
 body {
-  margin:0; font-family:Arial; padding:18px;
-  background:linear-gradient(135deg,#fffbe2,#ffe8f6,#e7f8ff);
+  margin:0;
+  font-family: Arial, sans-serif;
+  background: linear-gradient(135deg,#fffbe2,#ffe8f6,#e7f8ff);
+  padding:10px;
 }
 
 .wrap {
-  max-width:1100px; margin:auto; background:white;
-  border-radius:20px; padding:20px;
+  max-width:900px;
+  margin:auto;
+  background:white;
+  border-radius:16px;
+  padding:15px;
+}
+
+h2 { margin:5px 0 10px; }
+
+.top {
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:10px;
+  font-size:14px;
 }
 
 .grid {
-  display:grid; grid-template-columns:repeat(6,1fr);
-  gap:10px;
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:8px;
 }
 
 .tile {
   aspect-ratio:1;
-  font-size:24px; font-weight:bold;
-  border-radius:12px; border:none;
+  font-size:22px;
+  font-weight:bold;
+  border-radius:10px;
+  border:none;
   background:#eef8ff;
+  color:#25324a;
 }
 
-.selected { background:gold; }
-
-.current-box {
-  margin-top:10px; text-align:center;
-  font-size:22px; font-weight:bold;
+.selected {
+  background:gold;
+  color:#000;
 }
 
-button { padding:10px; border:none; border-radius:20px; margin:5px; color:white; }
-.green{background:#22c878;}
-.purple{background:#6e7ff2;}
-.blue{background:#49c7f2;}
-.pink{background:#ff5fa2;}
+.current {
+  margin-top:8px;
+  text-align:center;
+  font-size:18px;
+  font-weight:bold;
+  min-height:24px;
+}
+
+.bottom {
+  display:flex;
+  justify-content:space-between;
+  margin-top:8px;
+  align-items:center;
+}
+
+button {
+  padding:8px 12px;
+  border:none;
+  border-radius:14px;
+  background:#6e7ff2;
+  color:white;
+}
+
+ul {
+  margin-top:10px;
+  max-height:150px;
+  overflow:auto;
+  font-size:13px;
+}
 </style>
 </head>
 
@@ -56,23 +89,25 @@ button { padding:10px; border:none; border-radius:20px; margin:5px; color:white;
 
 <h2>Words Galore</h2>
 
-<div>Time: <span id="timeDisplay">90</span></div>
-<div>Words: <span id="wordsDisplay">0</span></div>
+<div class="top">
+  <div>Time: <span id="time">90</span></div>
+  <div>Words: <span id="count">0</span></div>
+</div>
 
 <div class="grid" id="grid"></div>
 
-<div class="current-box" id="currentWord">Select Letters</div>
+<div class="current" id="currentWord">Select Letters</div>
 
-<button class="green" onclick="submit()">Submit</button>
-<button class="purple" onclick="clearWord()">Clear</button>
+<div class="bottom">
+  <button onclick="clearWord()">Clear</button>
+</div>
 
-<ul id="wordList"></ul>
+<ul id="list"></ul>
 
 </div>
 
 <script>
 
-// ✅ LOAD WORD LIST
 let WORDS = new Set();
 
 async function loadWords() {
@@ -86,84 +121,87 @@ async function loadWords() {
   );
 }
 
-// GAME VARIABLES
-const LETTER_POOL = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const LETTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 let board=[], path=[], found=new Set();
-let time=90, active=true;
+let time=90, playing=true;
 
-// BUILD BOARD
 function init() {
-  board = Array.from({length:6},()=>Array.from({length:6},()=>LETTER_POOL[Math.floor(Math.random()*26)]));
+  board = Array.from({length:6},()=>Array.from({length:6},()=>LETTERS[Math.floor(Math.random()*26)]));
   found.clear();
   time=90;
-  active=true;
+  playing=true;
   draw();
-  timer();
+  startTimer();
 }
 
-// DRAW GRID
 function draw() {
   grid.innerHTML="";
-  board.forEach((row,i)=>row.forEach((letter,j)=>{
-    let b=document.createElement("button");
-    b.className="tile"+(path.some(p=>p.i==i&&p.j==j)?" selected":"");
-    b.textContent=letter;
 
-    b.onpointerdown=()=>{ path=[{i,j}]; draw(); };
-    b.onpointerenter=e=>{
+  board.forEach((row,i)=>row.forEach((letter,j)=>{
+    let btn=document.createElement("button");
+    btn.className="tile"+(path.some(p=>p.i===i && p.j===j)?" selected":"");
+    btn.textContent=letter;
+
+    btn.onpointerdown=()=>{
+      path=[{i,j}];
+      draw();
+    };
+
+    btn.onpointerenter=(e)=>{
       if(e.buttons){
         let last=path[path.length-1];
         if(Math.abs(last.i-i)<=1 && Math.abs(last.j-j)<=1 &&
-           !path.some(p=>p.i==i&&p.j==j)){
-          path.push({i,j}); draw();
+           !path.some(p=>p.i===i && p.j===j)){
+          path.push({i,j});
+          draw();
         }
       }
     };
 
-    grid.appendChild(b);
+    btn.onpointerup=()=>{
+      submitWord();
+    };
+
+    grid.appendChild(btn);
   }));
 
   currentWord.textContent = path.map(p=>board[p.i][p.j]).join("") || "Select Letters";
-  wordsDisplay.textContent = found.size;
+  count.textContent = found.size;
 }
 
-// SUBMIT WORD
-function submit() {
-  let word = currentWord.textContent.toLowerCase();
+function submitWord() {
+  let word = path.map(p=>board[p.i][p.j]).join("").toLowerCase();
 
-  if(word.length>=3 && WORDS.has(word) && !found.has(word)){
+  if(word.length >= 3 && WORDS.has(word) && !found.has(word)){
     found.add(word);
 
     let li=document.createElement("li");
     li.textContent=word;
-    wordList.appendChild(li);
+    list.appendChild(li);
   }
 
   path=[];
   draw();
 }
 
-// CLEAR
 function clearWord(){
   path=[];
   draw();
 }
 
-// TIMER
-function timer(){
+function startTimer(){
   let t=setInterval(()=>{
     time--;
-    timeDisplay.textContent=time;
+    document.getElementById("time").textContent=time;
 
     if(time<=0){
       clearInterval(t);
-      alert("You found "+found.size+" words!");
-      active=false;
+      playing=false;
+      alert("Time's up! You found "+found.size+" words!");
     }
   },1000);
 }
 
-// START GAME AFTER WORDS LOAD
 loadWords().then(()=>{
   init();
 });
