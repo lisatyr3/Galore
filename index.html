@@ -32,12 +32,12 @@
     }
 
     .wrap {
-      max-width: 900px; /* Slimmed down width */
+      max-width: 850px;
       margin: 0 auto;
       background: var(--card);
       border-radius: 20px;
       box-shadow: var(--shadow);
-      padding: 15px;
+      padding: 10px;
       border: 1px solid rgba(255,255,255,0.8);
       backdrop-filter: blur(5px);
     }
@@ -46,65 +46,72 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }
 
-    h1 { margin: 0; font-size: 1.8rem; } /* Smaller Title */
+    h1 { margin: 0; font-size: 1.5rem; }
 
     .stats {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
       gap: 8px;
+      margin-bottom: 10px;
     }
 
     .stat {
       background: #fff;
       border-radius: 12px;
-      padding: 8px;
+      padding: 6px;
       text-align: center;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
 
-    .stat-label { font-size: 0.7rem; color: #6d7689; display: block; }
-    .stat-value { font-size: 1.2rem; font-weight: 800; }
+    .stat-label { font-size: 0.65rem; color: #6d7689; display: block; text-transform: uppercase; }
+    .stat-value { font-size: 1.1rem; font-weight: 800; }
 
     .layout {
       display: grid;
-      grid-template-columns: 1fr 240px;
+      grid-template-columns: 1fr 220px;
       gap: 15px;
     }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      gap: 8px;
+      gap: 6px;
       touch-action: none;
     }
 
     .tile {
       aspect-ratio: 1/1;
       border: 0;
-      border-radius: 10px;
+      border-radius: 8px;
       background: #fff;
-      font-size: 1.5rem;
+      font-size: 1.3rem;
       font-weight: 800;
       cursor: pointer;
       box-shadow: 0 4px 8px rgba(0,0,0,0.05);
       display: flex;
       align-items: center;
       justify-content: center;
+      user-select: none;
     }
 
     .tile.selected { background: var(--gold); color: #fff; }
 
     .current-box {
-      margin: 10px 0;
+      margin-bottom: 8px;
       background: #eee;
       border-radius: 10px;
-      padding: 10px;
+      padding: 8px;
       text-align: center;
       font-weight: 800;
-      min-height: 45px;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      letter-spacing: 2px;
     }
 
     .btn {
@@ -114,25 +121,37 @@
       font-weight: 800;
       color: #fff;
       cursor: pointer;
+      transition: opacity 0.2s;
     }
 
+    .btn:active { opacity: 0.8; }
     .btn-pink { background: var(--pink); }
     .btn-green { background: var(--green); }
 
     .word-list {
       list-style: none;
       padding: 0;
-      max-height: 300px;
+      margin: 0;
+      max-height: 320px;
       overflow-y: auto;
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 5px;
     }
 
-    .word-list li { background: #fff; padding: 5px; border-radius: 5px; font-size: 0.85rem; font-weight: bold; text-align: center;}
+    .word-list li { 
+      background: #fff; 
+      padding: 5px; 
+      border-radius: 5px; 
+      font-size: 0.8rem; 
+      font-weight: bold; 
+      text-align: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+    }
 
     @media (max-width: 600px) {
       .layout { grid-template-columns: 1fr; }
+      .word-list { max-height: 150px; }
     }
   </style>
 </head>
@@ -144,25 +163,25 @@
     </div>
 
     <div class="stats">
-      <div class="stat"><span class="stat-label">TIME</span><span id="timeDisplay" class="stat-value">1:30</span></div>
-      <div class="stat"><span class="stat-label">WORDS</span><span id="wordsDisplay" class="stat-value">0</span></div>
-      <div class="stat"><span class="stat-label">SCORE</span><span id="scoreDisplay" class="stat-value">0</span></div>
-      <div class="stat"><span class="stat-label">BEST</span><span id="bestDisplay" class="stat-value">0</span></div>
+      <div class="stat"><span class="stat-label">Time</span><span id="timeDisplay" class="stat-value">1:30</span></div>
+      <div class="stat"><span class="stat-label">Words</span><span id="wordsDisplay" class="stat-value">0</span></div>
+      <div class="stat"><span class="stat-label">Score</span><span id="scoreDisplay" class="stat-value">0</span></div>
+      <div class="stat"><span class="stat-label">Best</span><span id="bestDisplay" class="stat-value">0</span></div>
     </div>
 
     <div class="layout">
       <section>
-        <div class="current-box" id="currentWord">Select Letters</div>
+        <div class="current-box" id="currentWord">SELECT LETTERS</div>
         <div class="grid" id="grid"></div>
         <div style="margin-top:10px; display:flex; gap:10px;">
-            <button class="btn btn-green" style="flex:1" id="submitBtn">Submit</button>
-            <button class="btn btn-pink" style="flex:1" id="shuffleBtn">Shuffle</button>
+            <button class="btn btn-green" style="flex:1" id="submitBtn">SUBMIT</button>
+            <button class="btn btn-pink" style="flex:1" id="shuffleBtn">SHUFFLE</button>
         </div>
-        <div id="message" style="margin-top:5px; font-weight:bold; height:20px; font-size:0.9rem;"></div>
+        <div id="message" style="margin-top:8px; font-weight:bold; height:20px; font-size:0.9rem; text-align:center;"></div>
       </section>
 
       <aside>
-        <h3 style="margin-top:0">Found</h3>
+        <h3 style="margin: 0 0 10px 0; font-size: 1rem;">FOUND WORDS</h3>
         <ul class="word-list" id="wordList"></ul>
       </aside>
     </div>
@@ -194,12 +213,16 @@
     let timerId = null;
     let gameActive = false;
     let pointerDown = false;
-    let bestWords = 0;
+    let bestScore = 0;
 
-    async function loadWords() {
-      // Expanded internal list - add as many as you like here
-      const manualWords = ['able','about','above','accept','across','act','action','add','after','again','age','ago','agree','air','all','allow','almost','along','also','always','among','animal','another','answer','appear','area','around','arrive','art','ask','away','baby','back','ball','bank','base','bear','beat','beauty','because','become','been','before','begin','behind','believe','best','better','between','bird','black','blue','boat','body','book','both','bring','build','busy','call','came','care','carry','case','cause','center','change','check','child','city','class','clean','clear','close','cold','come','common','complete','contain','continue','cool','copy','cost','could','country','course','cover','create','dark','data','dead','deal','decide','deep','develop','different','done','door','down','draw','dream','drive','during','early','earth','easy','edge','enough','even','ever','every','example','face','fact','fall','family','farm','fast','father','feel','feet','field','figure','fill','final','find','fine','fire','first','fish','five','floor','follow','food','force','form','found','four','free','friend','from','front','full','game','gave','girl','give','gold','good','great','green','ground','group','grow','half','hand','happen','hard','have','head','hear','heat','help','here','high','home','horse','hour','house','however','idea','important','interest','into','join','just','keep','kind','king','knew','know','land','large','last','late','later','laugh','lead','learn','leave','left','less','letter','life','light','like','line','list','listen','little','live','long','look','love','made','make','many','mean','measure','might','mile','mind','miss','more','most','mother','move','much','must','name','near','need','never','next','night','note','nothing','number','often','once','only','open','order','other','outer','over','owner','page','paper','part','pass','past','people','perhaps','person','place','plan','play','point','power','press','problem','program','provide','question','quick','quite','rain','reach','read','ready','real','reason','receive','record','remember','rest','result','right','river','road','rock','room','said','same','school','second','seem','self','send','several','should','show','side','simple','since','small','some','something','soon','sound','south','space','stand','start','state','stay','step','still','stop','story','street','strong','study','such','system','take','talk','tell','term','than','that','their','them','then','there','these','they','thing','think','this','those','thought','three','through','time','together','told','toward','town','tree','turn','under','until','upon','usually','very','want','watch','water','week','well','went','were','what','when','where','which','while','white','will','with','word','work','world','would','write','year','young','zip','zoo','zoom','zig','zag','chic','cabin','oak','organic','sport','modern','scandi','vagus','nerve','wellness','awe','walk','mediterranean','photo','style','retro','vintage','blog','podcast','retyre'];
-      DICTIONARY = new Set(manualWords.map(w => w.toLowerCase()));
+    function loadWords() {
+      // Full word bank from your provided list [cite: 1]
+      const manualWords = [
+        'able','about','above','accept','across','action','added','after','again','agree','ahead','allow','almost','along','already','also','always','among','animal','another','answer','any','appear','area','around','arrive','away','back','ball','bank','base','bear','beat','beauty','because','become','been','before','begin','behind','believe','best','better','between','bird','black','blue','boat','body','book','both','bring','build','busy','call','came','care','carry','case','cause','center','change','check','child','city','class','clean','clear','close','cold','come','common','complete','contain','continue','cool','copy','corn','cost','could','country','course','cover','create','dark','data','dead','deal','decide','deep','develop','different','done','door','down','draw','dream','drive','during','early','earth','easy','edge','enough','even','ever','every','example','face','fact','fall','family','far','farm','fast','father','feel','feet','field','figure','fill','final','find','fine','fire','first','fish','five','floor','follow','food','force','form','found','four','free','friend','from','front','full','game','gave','girl','give','gold','good','great','green','ground','group','grow','half','hand','happen','hard','have','head','hear','heat','help','here','high','home','horse','hour','house','however','idea','important','interest','into','join','just','keep','kind','king','knew','know','land','large','last','late','later','laugh','lead','learn','leave','left','less','letter','life','light','like','line','list','listen','little','live','long','look','love','made','make','many','mean','measure','might','mile','mind','miss','more','most','mother','move','much','must','name','near','need','never','next','night','note','nothing','now','number','often','once','only','open','order','other','outer','over','owner','page','paper','part','pass','past','people','perhaps','person','place','plan','play','point','power','press','problem','program','provide','question','quick','quite','rain','reach','read','ready','real','reason','receive','record','remember','rest','result','right','river','road','rock','room','said','same','school','second','seem','self','send','several','should','show','side','simple','since','small','some','something','soon','sound','south','space','stand','start','state','stay','step','still','stop','story','street','strong','study','such','sun','system','take','talk','tell','ten','term','than','that','the','their','them','then','there','these','they','thing','think','this','those','thought','three','through','time','together','told','too','took','top','toward','town','tree','try','turn','two','under','until','upon','use','usually','very','want','war','was','watch','water','way','week','well','went','were','what','when','where','which','while','white','who','why','will','with','word','work','world','would','write','year','yes','yet','you','young','zip','zoo','zoom','zig','zag'
+      ];
+      // Filter out 2-letter words as requested
+      const filtered = manualWords.filter(w => w.length >= 3);
+      DICTIONARY = new Set(filtered.map(w => w.toLowerCase()));
       startNewGame();
     }
 
@@ -213,57 +236,118 @@
       gridEl.innerHTML = '';
       board.forEach((row, r) => {
         row.forEach((letter, c) => {
-          const tile = document.createElement('button');
+          const tile = document.createElement('div');
           tile.className = 'tile' + (selectedPath.some(p => p.r === r && p.c === c) ? ' selected' : '');
           tile.textContent = letter;
-          tile.onpointerdown = () => { if(gameActive) { pointerDown = true; selectedPath = [{r,c}]; renderBoard(); }};
-          tile.onpointerenter = () => { if(gameActive && pointerDown) { 
-            if (!selectedPath.some(p => p.r === r && p.c === c)) {
-                let last = selectedPath[selectedPath.length-1];
-                if (Math.abs(last.r - r) <= 1 && Math.abs(last.c - c) <= 1) {
-                    selectedPath.push({r,c}); renderBoard();
-                }
+          
+          tile.onpointerdown = (e) => {
+            if(!gameActive) return;
+            tile.releasePointerCapture(e.pointerId);
+            pointerDown = true;
+            selectedPath = [{r,c}];
+            renderBoard();
+          };
+          
+          tile.onpointerenter = () => {
+            if(!gameActive || !pointerDown) return;
+            const alreadySelected = selectedPath.some(p => p.r === r && p.c === c);
+            if (!alreadySelected) {
+              const last = selectedPath[selectedPath.length - 1];
+              if (Math.abs(last.r - r) <= 1 && Math.abs(last.c - c) <= 1) {
+                selectedPath.push({r,c});
+                renderBoard();
+              }
             }
-          }};
+          };
           gridEl.appendChild(tile);
         });
       });
-      let word = selectedPath.map(p => board[p.r][p.c]).join('');
-      currentWordEl.textContent = word || 'Select Letters';
+      const word = selectedPath.map(p => board[p.r][p.c]).join('');
+      currentWordEl.textContent = word || 'SELECT LETTERS';
     }
 
     function submitWord() {
-      let word = selectedPath.map(p => board[p.r][p.c]).join('').toLowerCase();
-      if (word.length >= 3 && DICTIONARY.has(word) && !foundWords.has(word)) {
+      if(!gameActive || selectedPath.length === 0) return;
+      
+      const word = selectedPath.map(p => board[p.r][p.c]).join('').toLowerCase();
+      
+      if (word.length < 3) {
+        messageEl.style.color = 'var(--bad)';
+        messageEl.textContent = "3+ letters required!";
+      } else if (foundWords.has(word)) {
+        messageEl.style.color = 'var(--purple)';
+        messageEl.textContent = "Already found!";
+      } else if (DICTIONARY.has(word)) {
         foundWords.add(word);
-        score++;
-        const li = document.createElement('li'); li.textContent = word.toUpperCase();
+        score++; // 1 point per word logic
+        const li = document.createElement('li');
+        li.textContent = word.toUpperCase();
         wordListEl.prepend(li);
-        messageEl.textContent = "Great!";
+        
+        messageEl.style.color = 'var(--green)';
+        messageEl.textContent = "Nice!";
         wordsDisplayEl.textContent = foundWords.size;
         scoreDisplayEl.textContent = score;
       } else {
-        messageEl.textContent = "Try again!";
+        messageEl.style.color = 'var(--bad)';
+        messageEl.textContent = "Not in word bank";
       }
+      
       selectedPath = [];
       renderBoard();
+      setTimeout(() => { messageEl.textContent = ""; }, 1500);
     }
 
-    document.onpointerup = () => { if(pointerDown) { submitWord(); pointerDown = false; }};
+    window.onpointerup = () => {
+      if(pointerDown) {
+        submitWord();
+        pointerDown = false;
+      }
+    };
 
     function startNewGame() {
-      foundWords = new Set(); score = 0; timeLeft = 90; wordListEl.innerHTML = '';
-      wordsDisplayEl.textContent = '0'; scoreDisplayEl.textContent = '0';
-      gameActive = true; buildBoard(); renderBoard();
+      foundWords = new Set();
+      score = 0;
+      timeLeft = ROUND_SECONDS;
+      wordListEl.innerHTML = '';
+      wordsDisplayEl.textContent = '0';
+      scoreDisplayEl.textContent = '0';
+      gameActive = true;
+      selectedPath = [];
+      buildBoard();
+      renderBoard();
+      
       if(timerId) clearInterval(timerId);
       timerId = setInterval(() => {
-        timeLeft--; timeDisplayEl.textContent = `0:${timeLeft.toString().padStart(2,'0')}`;
-        if(timeLeft <= 0) { clearInterval(timerId); gameActive = false; alert("Time's Up!"); }
+        timeLeft--;
+        const mins = Math.floor(timeLeft / 60);
+        const secs = timeLeft % 60;
+        timeDisplayEl.textContent = `${mins}:${secs.toString().padStart(2,'0')}`;
+        
+        if(timeLeft <= 0) {
+          clearInterval(timerId);
+          gameActive = false;
+          if(score > bestScore) {
+            bestScore = score;
+            bestDisplayEl.textContent = bestScore;
+          }
+          alert(`Game Over! You found ${foundWords.size} words.`);
+        }
       }, 1000);
     }
 
-    shuffleBtn.onclick = () => { buildBoard(); renderBoard(); };
+    shuffleBtn.onclick = () => { 
+      if(gameActive) {
+        buildBoard(); 
+        selectedPath = [];
+        renderBoard(); 
+      }
+    };
+    
+    submitBtn.onclick = submitWord;
     newGameBtn.onclick = startNewGame;
+
+    // Start everything
     loadWords();
   </script>
 </body>
