@@ -32,7 +32,6 @@
         radial-gradient(circle at 90% 14%, var(--bg-c), transparent 24%),
         linear-gradient(135deg, #fffbe2, #ffe8f6 50%, #e7f8ff);
       padding: 18px;
-      touch-action: none; /* Prevents scrolling while playing on mobile */
     }
 
     .wrap {
@@ -296,7 +295,7 @@
         <ul class="word-list" id="wordList"></ul>
         <div class="help">
           <strong>How to play:</strong><br>
-          Select touching letters to make words with 3 or more letters. You can move side to side, up and down, or diagonally. Submit your word before time runs out. Every round gives you a fresh board.
+          Select touching letters to make words. Submit your word before time runs out. Every round gives you a fresh board.
         </div>
       </aside>
     </div>
@@ -321,18 +320,10 @@
     const TODAY_SCORES_KEY = 'wordsGaloreTodayScoresV5';
     const TODAY_DATE_KEY = 'wordsGaloreTodayDateV5';
 
-    // Fallback dictionary in case words.txt fails to load
-    const FALLBACK_WORDS = ["able", "about", "above", "ache", "acid", "across", "act", "actor", "add", "after", "again", "age", "ten", "egg", "sun", "sea", "sky", "dog", "cat"];
-    let DICTIONARY = new Set(FALLBACK_WORDS);
+    // This variable will hold your list from words.txt
+    let DICTIONARY = new Set();
 
-    const LETTER_POOL = [
-      'A','A','A','A','A','A','A','A','A','A','B','B','C','C','C','C','D','D','D','D','D',
-      'E','E','E','E','E','E','E','E','E','E','E','E','E','F','F','F','G','G','G','G',
-      'H','H','H','H','I','I','I','I','I','I','I','I','I','J','K','L','L','L','L','L',
-      'M','M','M','M','N','N','N','N','N','N','N','O','O','O','O','O','O','O','O',
-      'P','P','P','P','Q','R','R','R','R','R','R','R','S','S','S','S','S','S',
-      'T','T','T','T','T','T','T','U','U','U','U','U','V','V','W','W','W','X','Y','Y','Y','Z'
-    ];
+    const LETTER_POOL = ['A','A','A','A','A','A','A','A','A','A','B','B','C','C','C','C','D','D','D','D','D','E','E','E','E','E','E','E','E','E','E','E','E','E','F','F','F','G','G','G','G','H','H','H','H','I','I','I','I','I','I','I','I','I','J','K','L','L','L','L','L','M','M','M','M','N','N','N','N','N','N','N','O','O','O','O','O','O','O','O','P','P','P','P','Q','R','R','R','R','R','R','R','S','S','S','S','S','S','T','T','T','T','T','T','T','U','U','U','U','U','V','V','W','W','W','X','Y','Y','Y','Z'];
 
     const gridEl = document.getElementById('grid');
     const currentWordEl = document.getElementById('currentWord');
@@ -363,20 +354,17 @@
     let pointerDown = false;
     let bestWords = parseInt(localStorage.getItem(BEST_WORDS_KEY) || '0', 10);
 
-    async function loadExternalWords() {
+    // 1. FETCH FROM YOUR GITHUB words.txt
+    async function loadWords() {
       try {
         const response = await fetch('words.txt');
-        if (!response.ok) throw new Error('Network response was not ok');
         const text = await response.text();
-        
-        // Split file by spaces or newlines
-        const wordsArray = text.toLowerCase().split(/\s+/).filter(w => w.length >= 3);
-        if (wordsArray.length > 0) {
-          DICTIONARY = new Set(wordsArray);
-          console.log("External dictionary loaded: " + DICTIONARY.size + " words.");
-        }
-      } catch (error) {
-        console.warn("Could not load words.txt, using fallbacks.", error);
+        // Splits by line and makes them lowercase
+        const wordArr = text.split('\n').map(w => w.trim().toLowerCase()).filter(w => w.length > 1);
+        DICTIONARY = new Set(wordArr);
+        console.log("Dictionary loaded with " + DICTIONARY.size + " words.");
+      } catch (e) {
+        console.error("Could not load words.txt", e);
       }
       startNewGame();
     }
@@ -491,12 +479,9 @@
       bestDisplayEl.textContent = String(bestWords);
     }
 
+    // 2. SCORING: 1 POINT PER WORD
     function scoreWord(word) {
-      if (word.length === 3) return 100;
-      if (word.length === 4) return 180;
-      if (word.length === 5) return 280;
-      if (word.length === 6) return 420;
-      return 600 + ((word.length - 7) * 120);
+      return 1; 
     }
 
     function addWordToList(word) {
@@ -510,11 +495,6 @@
       const word = getCurrentWord();
       if (!word) return;
 
-      if (word.length < 3) {
-        showMessage('Use at least 3 letters.', false);
-        clearSelection();
-        return;
-      }
       if (!DICTIONARY.has(word)) {
         showMessage('Not in dictionary.', false);
         clearSelection();
@@ -532,7 +512,7 @@
       addWordToList(word);
       showMessage(`Nice! ${word.toUpperCase()} (+${gained})`, true);
 
-      // Remove tiles and refill
+      // Remove and refill tiles
       selectedPath.forEach(({ row, col }) => { board[row][col] = null; });
       refillBoard();
       clearSelection();
@@ -577,8 +557,7 @@
         localStorage.setItem(TODAY_SCORES_KEY, JSON.stringify(fresh));
         return fresh;
       }
-      try { return JSON.parse(localStorage.getItem(TODAY_SCORES_KEY) || '[]'); } 
-      catch { return []; }
+      try { return JSON.parse(localStorage.getItem(TODAY_SCORES_KEY) || '[]'); } catch { return []; }
     }
 
     function saveTodayScore(wordCount) {
@@ -647,7 +626,9 @@
 
     // AUTO-SUBMIT on Pointer Up
     document.addEventListener('pointerup', () => {
-      if (pointerDown && gameActive) submitWord();
+      if (pointerDown && gameActive) {
+        submitWord();
+      }
       pointerDown = false;
     });
 
@@ -660,7 +641,7 @@
     playAgainBtn.addEventListener('click', startNewGame);
 
     // Initial load
-    loadExternalWords();
+    loadWords();
   </script>
 </body>
 </html>
