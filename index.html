@@ -17,313 +17,162 @@
       --purple: #6e7ff2;
       --gold: #ffbf3f;
       --bad: #ef476f;
-      --shadow: 0 16px 36px rgba(37,50,74,0.14);
+      --shadow: 0 8px 24px rgba(37,50,74,0.12);
     }
 
     * { box-sizing: border-box; }
 
     body {
       margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
+      font-family: Arial, sans-serif;
       color: var(--ink);
       min-height: 100vh;
-      background:
-        radial-gradient(circle at 10% 10%, var(--bg-b), transparent 24%),
-        radial-gradient(circle at 90% 14%, var(--bg-c), transparent 24%),
-        linear-gradient(135deg, #fffbe2, #ffe8f6 50%, #e7f8ff);
-      padding: 18px;
+      background: linear-gradient(135deg, #fffbe2, #ffe8f6, #e7f8ff);
+      padding: 10px;
     }
 
     .wrap {
-      max-width: 1240px;
+      max-width: 900px; /* Slimmed down width */
       margin: 0 auto;
       background: var(--card);
-      border-radius: 28px;
+      border-radius: 20px;
       box-shadow: var(--shadow);
-      padding: 24px;
-      border: 1px solid rgba(255,255,255,0.85);
+      padding: 15px;
+      border: 1px solid rgba(255,255,255,0.8);
       backdrop-filter: blur(5px);
     }
 
     .hero {
       display: flex;
-      flex-wrap: wrap;
-      gap: 18px;
-      align-items: flex-end;
       justify-content: space-between;
-      margin-bottom: 18px;
+      align-items: center;
+      margin-bottom: 10px;
     }
 
-    h1 {
-      margin: 0;
-      font-size: clamp(2.6rem, 5vw, 4rem);
-      line-height: 1;
-    }
-
-    .sub { margin: 8px 0 0; font-size: 1.1rem; opacity: 0.82; }
+    h1 { margin: 0; font-size: 1.8rem; } /* Smaller Title */
 
     .stats {
       display: grid;
-      grid-template-columns: repeat(4, minmax(130px, 1fr));
-      gap: 14px;
-      width: 100%;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
     }
 
     .stat {
-      background: rgba(255,255,255,0.92);
-      border-radius: 22px;
-      padding: 16px 18px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 8px;
       text-align: center;
-      box-shadow: 0 10px 22px rgba(37,50,74,0.08);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
 
-    .stat-label {
-      display: block;
-      font-size: 0.84rem;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      color: #6d7689;
-      margin-bottom: 6px;
-    }
-
-    .stat-value { display: block; font-size: 2rem; font-weight: 800; }
+    .stat-label { font-size: 0.7rem; color: #6d7689; display: block; }
+    .stat-value { font-size: 1.2rem; font-weight: 800; }
 
     .layout {
       display: grid;
-      grid-template-columns: minmax(0, 1fr) 340px;
-      gap: 22px;
-      align-items: start;
+      grid-template-columns: 1fr 240px;
+      gap: 15px;
     }
-
-    .panel {
-      background: rgba(255,255,255,0.92);
-      border-radius: 26px;
-      box-shadow: 0 10px 24px rgba(37,50,74,0.08);
-      padding: 20px;
-    }
-
-    .panel-head {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 16px;
-    }
-
-    .head-note { font-size: 1rem; font-weight: 700; max-width: 520px; }
 
     .grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      gap: 12px;
+      gap: 8px;
       touch-action: none;
-      user-select: none;
-      -webkit-user-select: none;
     }
 
     .tile {
-      aspect-ratio: 1 / 1;
+      aspect-ratio: 1/1;
       border: 0;
-      border-radius: 18px;
-      background: linear-gradient(180deg, #ffffff, #eef8ff);
-      color: var(--ink);
-      font-size: clamp(1.45rem, 2.2vw, 2rem);
+      border-radius: 10px;
+      background: #fff;
+      font-size: 1.5rem;
       font-weight: 800;
       cursor: pointer;
-      box-shadow: 0 10px 18px rgba(73,199,242,0.16);
-      transition: transform 0.14s ease, box-shadow 0.14s ease, background 0.14s ease;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.05);
       display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    .tile.selected {
-      background: linear-gradient(180deg, #ffe797, var(--gold));
-      box-shadow: 0 12px 24px rgba(255,191,63,0.34);
-      transform: scale(1.04);
-    }
+    .tile.selected { background: var(--gold); color: #fff; }
 
     .current-box {
-      margin-top: 16px;
-      background: linear-gradient(90deg, #f9ddf0, #dfefff);
-      border-radius: 20px;
-      min-height: 70px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 14px;
-      font-size: 1.7rem;
-      font-weight: 900;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
+      margin: 10px 0;
+      background: #eee;
+      border-radius: 10px;
+      padding: 10px;
       text-align: center;
-      box-shadow: inset 0 0 0 1px rgba(37,50,74,0.06);
+      font-weight: 800;
+      min-height: 45px;
     }
-
-    .actions { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 12px; }
 
     .btn {
       border: 0;
-      border-radius: 999px;
-      padding: 14px 20px;
-      font-size: 1rem;
+      border-radius: 20px;
+      padding: 10px 15px;
       font-weight: 800;
       color: #fff;
       cursor: pointer;
-      box-shadow: 0 10px 20px rgba(37,50,74,0.12);
-      transition: transform 0.14s ease, opacity 0.14s ease;
     }
 
-    .btn:hover { transform: translateY(-1px); }
-    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn-green { background: linear-gradient(135deg, var(--green), #30db8d); }
-    .btn-purple { background: linear-gradient(135deg, var(--purple), #8895ff); }
-    .btn-blue { background: linear-gradient(135deg, var(--blue), #6ad7fb); }
-    .btn-pink { background: linear-gradient(135deg, var(--pink), #ff84bb); }
-
-    .message { min-height: 28px; margin-top: 12px; font-size: 1rem; font-weight: 800; }
-    .good { color: var(--green); }
-    .bad { color: var(--bad); }
+    .btn-pink { background: var(--pink); }
+    .btn-green { background: var(--green); }
 
     .word-list {
       list-style: none;
       padding: 0;
-      margin: 0;
+      max-height: 300px;
+      overflow-y: auto;
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 8px;
-      max-height: 520px;
-      overflow: auto;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
     }
 
-    .word-list li {
-      background: linear-gradient(90deg, #fff7d8, #fff);
-      border-radius: 14px;
-      padding: 10px 12px;
-      font-weight: 800;
-      text-transform: uppercase;
-      box-shadow: inset 0 0 0 1px rgba(37,50,74,0.05);
-    }
+    .word-list li { background: #fff; padding: 5px; border-radius: 5px; font-size: 0.85rem; font-weight: bold; text-align: center;}
 
-    .help {
-      padding: 14px;
-      border-radius: 18px;
-      background: #f6fbff;
-      line-height: 1.45;
-      font-size: 0.98rem;
-      margin-top: 16px;
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(37,50,74,0.45);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      z-index: 100;
-    }
-
-    .overlay.show { display: flex; }
-
-    .modal {
-      background: #fff;
-      width: min(92vw, 560px);
-      border-radius: 28px;
-      box-shadow: 0 18px 54px rgba(0,0,0,0.18);
-      padding: 28px 24px;
-      text-align: center;
-    }
-
-    .modal h3 { margin: 0 0 12px; font-size: 2.2rem; }
-    .big { font-size: 3rem; font-weight: 900; color: var(--pink); margin: 8px 0 12px; }
-    .modal-line { font-size: 1.14rem; margin: 10px 0; }
-
-    @media (max-width: 980px) {
+    @media (max-width: 600px) {
       .layout { grid-template-columns: 1fr; }
-      .stats { grid-template-columns: repeat(2, minmax(120px, 1fr)); }
-    }
-
-    @media (max-width: 640px) {
-      body { padding: 10px; }
-      .wrap { padding: 14px; }
-      .grid { gap: 8px; }
-      .tile { border-radius: 14px; }
-      .current-box { font-size: 1.25rem; min-height: 62px; }
     }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="hero">
-      <div>
-        <h1>Words Galore</h1>
-        <div class="sub">Find as many words as you can in 90 seconds.</div>
-      </div>
-      <div class="stats">
-        <div class="stat"><span class="stat-label">Time</span><span class="stat-value" id="timeDisplay">1:30</span></div>
-        <div class="stat"><span class="stat-label">Words</span><span class="stat-value" id="wordsDisplay">0</span></div>
-        <div class="stat"><span class="stat-label">Score</span><span class="stat-value" id="scoreDisplay">0</span></div>
-        <div class="stat"><span class="stat-label">Best</span><span class="stat-value" id="bestDisplay">0</span></div>
-      </div>
+      <h1>Words Galore</h1>
+      <button class="btn btn-pink" id="newGameBtn">New Game</button>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><span class="stat-label">TIME</span><span id="timeDisplay" class="stat-value">1:30</span></div>
+      <div class="stat"><span class="stat-label">WORDS</span><span id="wordsDisplay" class="stat-value">0</span></div>
+      <div class="stat"><span class="stat-label">SCORE</span><span id="scoreDisplay" class="stat-value">0</span></div>
+      <div class="stat"><span class="stat-label">BEST</span><span id="bestDisplay" class="stat-value">0</span></div>
     </div>
 
     <div class="layout">
-      <section class="panel">
-        <div class="panel-head">
-          <div class="head-note">Click or drag across touching letters to build words.</div>
-          <button class="btn btn-pink" id="newGameBtn">New Game</button>
-        </div>
-
+      <section>
+        <div class="current-box" id="currentWord">Select Letters</div>
         <div class="grid" id="grid"></div>
-
-        <div class="current-box" id="currentWord">Drag letters to build a word</div>
-
-        <div class="actions">
-          <button class="btn btn-green" id="submitBtn">Submit Word</button>
-          <button class="btn btn-purple" id="clearBtn">Clear</button>
-          <button class="btn btn-blue" id="shuffleBtn">Shuffle Letters</button>
+        <div style="margin-top:10px; display:flex; gap:10px;">
+            <button class="btn btn-green" style="flex:1" id="submitBtn">Submit</button>
+            <button class="btn btn-pink" style="flex:1" id="shuffleBtn">Shuffle</button>
         </div>
-
-        <div class="message" id="message"></div>
+        <div id="message" style="margin-top:5px; font-weight:bold; height:20px; font-size:0.9rem;"></div>
       </section>
 
-      <aside class="panel side">
-        <h2>Words Found</h2>
+      <aside>
+        <h3 style="margin-top:0">Found</h3>
         <ul class="word-list" id="wordList"></ul>
-        <div class="help">
-          <strong>How to play:</strong><br>
-          Select touching letters to make words. Submit your word before time runs out. Every round gives you a fresh board.
-        </div>
       </aside>
-    </div>
-  </div>
-
-  <div class="overlay" id="overlay">
-    <div class="modal">
-      <h3>Time’s Up!</h3>
-      <div class="modal-line">You found</div>
-      <div class="big" id="finalWords">0 words</div>
-      <div class="modal-line">Score: <strong id="finalScore">0</strong></div>
-      <div class="modal-line">Better than <strong id="finalPercentile">0%</strong> of today’s players</div>
-      <div class="modal-line">Best game: <strong id="finalBest">0</strong> words</div>
-      <div style="margin-top:18px;"><button class="btn btn-pink" id="playAgainBtn">Play Again</button></div>
     </div>
   </div>
 
   <script>
     const BOARD_SIZE = 6;
     const ROUND_SECONDS = 90;
-    const BEST_WORDS_KEY = 'wordsGaloreBestWordsV5';
-    const TODAY_SCORES_KEY = 'wordsGaloreTodayScoresV5';
-    const TODAY_DATE_KEY = 'wordsGaloreTodayDateV5';
-
-    // This variable will hold your list from words.txt
     let DICTIONARY = new Set();
-
-    const LETTER_POOL = ['A','A','A','A','A','A','A','A','A','A','B','B','C','C','C','C','D','D','D','D','D','E','E','E','E','E','E','E','E','E','E','E','E','E','F','F','F','G','G','G','G','H','H','H','H','I','I','I','I','I','I','I','I','I','J','K','L','L','L','L','L','M','M','M','M','N','N','N','N','N','N','N','O','O','O','O','O','O','O','O','P','P','P','P','Q','R','R','R','R','R','R','R','S','S','S','S','S','S','T','T','T','T','T','T','T','U','U','U','U','U','V','V','W','W','W','X','Y','Y','Y','Z'];
+    const LETTER_POOL = ['A','A','A','A','E','E','E','E','I','I','I','O','O','O','U','U','L','L','N','N','R','R','S','S','T','T','D','D','G','G','B','C','F','H','M','P','V','W','Y','K','J','X','Q','Z'];
 
     const gridEl = document.getElementById('grid');
     const currentWordEl = document.getElementById('currentWord');
@@ -334,15 +183,8 @@
     const scoreDisplayEl = document.getElementById('scoreDisplay');
     const bestDisplayEl = document.getElementById('bestDisplay');
     const submitBtn = document.getElementById('submitBtn');
-    const clearBtn = document.getElementById('clearBtn');
     const shuffleBtn = document.getElementById('shuffleBtn');
     const newGameBtn = document.getElementById('newGameBtn');
-    const overlayEl = document.getElementById('overlay');
-    const finalWordsEl = document.getElementById('finalWords');
-    const finalScoreEl = document.getElementById('finalScore');
-    const finalPercentileEl = document.getElementById('finalPercentile');
-    const finalBestEl = document.getElementById('finalBest');
-    const playAgainBtn = document.getElementById('playAgainBtn');
 
     let board = [];
     let selectedPath = [];
@@ -352,295 +194,76 @@
     let timerId = null;
     let gameActive = false;
     let pointerDown = false;
-    let bestWords = parseInt(localStorage.getItem(BEST_WORDS_KEY) || '0', 10);
+    let bestWords = 0;
 
-    // 1. FETCH FROM YOUR GITHUB words.txt
     async function loadWords() {
-      try {
-        const response = await fetch('words.txt');
-        const text = await response.text();
-        // Splits by line and makes them lowercase
-        const wordArr = text.split('\n').map(w => w.trim().toLowerCase()).filter(w => w.length > 1);
-        DICTIONARY = new Set(wordArr);
-        console.log("Dictionary loaded with " + DICTIONARY.size + " words.");
-      } catch (e) {
-        console.error("Could not load words.txt", e);
-      }
+      // Expanded internal list - add as many as you like here
+      const manualWords = ['able','about','above','accept','across','act','action','add','after','again','age','ago','agree','air','all','allow','almost','along','also','always','among','animal','another','answer','appear','area','around','arrive','art','ask','away','baby','back','ball','bank','base','bear','beat','beauty','because','become','been','before','begin','behind','believe','best','better','between','bird','black','blue','boat','body','book','both','bring','build','busy','call','came','care','carry','case','cause','center','change','check','child','city','class','clean','clear','close','cold','come','common','complete','contain','continue','cool','copy','cost','could','country','course','cover','create','dark','data','dead','deal','decide','deep','develop','different','done','door','down','draw','dream','drive','during','early','earth','easy','edge','enough','even','ever','every','example','face','fact','fall','family','farm','fast','father','feel','feet','field','figure','fill','final','find','fine','fire','first','fish','five','floor','follow','food','force','form','found','four','free','friend','from','front','full','game','gave','girl','give','gold','good','great','green','ground','group','grow','half','hand','happen','hard','have','head','hear','heat','help','here','high','home','horse','hour','house','however','idea','important','interest','into','join','just','keep','kind','king','knew','know','land','large','last','late','later','laugh','lead','learn','leave','left','less','letter','life','light','like','line','list','listen','little','live','long','look','love','made','make','many','mean','measure','might','mile','mind','miss','more','most','mother','move','much','must','name','near','need','never','next','night','note','nothing','number','often','once','only','open','order','other','outer','over','owner','page','paper','part','pass','past','people','perhaps','person','place','plan','play','point','power','press','problem','program','provide','question','quick','quite','rain','reach','read','ready','real','reason','receive','record','remember','rest','result','right','river','road','rock','room','said','same','school','second','seem','self','send','several','should','show','side','simple','since','small','some','something','soon','sound','south','space','stand','start','state','stay','step','still','stop','story','street','strong','study','such','system','take','talk','tell','term','than','that','their','them','then','there','these','they','thing','think','this','those','thought','three','through','time','together','told','toward','town','tree','turn','under','until','upon','usually','very','want','watch','water','week','well','went','were','what','when','where','which','while','white','will','with','word','work','world','would','write','year','young','zip','zoo','zoom','zig','zag','chic','cabin','oak','organic','sport','modern','scandi','vagus','nerve','wellness','awe','walk','mediterranean','photo','style','retro','vintage','blog','podcast','retyre'];
+      DICTIONARY = new Set(manualWords.map(w => w.toLowerCase()));
       startNewGame();
-    }
-
-    function randomLetter() {
-      return LETTER_POOL[Math.floor(Math.random() * LETTER_POOL.length)];
     }
 
     function buildBoard() {
       board = Array.from({ length: BOARD_SIZE }, () =>
-        Array.from({ length: BOARD_SIZE }, () => randomLetter())
+        Array.from({ length: BOARD_SIZE }, () => LETTER_POOL[Math.floor(Math.random() * LETTER_POOL.length)])
       );
     }
 
     function renderBoard() {
       gridEl.innerHTML = '';
-      for (let row = 0; row < BOARD_SIZE; row++) {
-        for (let col = 0; col < BOARD_SIZE; col++) {
+      board.forEach((row, r) => {
+        row.forEach((letter, c) => {
           const tile = document.createElement('button');
-          tile.className = 'tile';
-          tile.textContent = board[row][col];
-          tile.dataset.row = String(row);
-          tile.dataset.col = String(col);
-
-          if (selectedPath.some(pos => pos.row === row && pos.col === col)) {
-            tile.classList.add('selected');
-          }
-
-          tile.addEventListener('pointerdown', handlePointerDown);
-          tile.addEventListener('pointerenter', handlePointerEnter);
-
+          tile.className = 'tile' + (selectedPath.some(p => p.r === r && p.c === c) ? ' selected' : '');
+          tile.textContent = letter;
+          tile.onpointerdown = () => { if(gameActive) { pointerDown = true; selectedPath = [{r,c}]; renderBoard(); }};
+          tile.onpointerenter = () => { if(gameActive && pointerDown) { 
+            if (!selectedPath.some(p => p.r === r && p.c === c)) {
+                let last = selectedPath[selectedPath.length-1];
+                if (Math.abs(last.r - r) <= 1 && Math.abs(last.c - c) <= 1) {
+                    selectedPath.push({r,c}); renderBoard();
+                }
+            }
+          }};
           gridEl.appendChild(tile);
-        }
-      }
-      updateCurrentWord();
-    }
-
-    function coordsFromElement(el) {
-      return {
-        row: parseInt(el.dataset.row, 10),
-        col: parseInt(el.dataset.col, 10)
-      };
-    }
-
-    function handlePointerDown(event) {
-      if (!gameActive) return;
-      event.preventDefault();
-      pointerDown = true;
-      const { row, col } = coordsFromElement(event.currentTarget);
-      selectedPath = [{ row, col }];
-      clearMessage();
-      renderBoard();
-    }
-
-    function handlePointerEnter(event) {
-      if (!gameActive || !pointerDown) return;
-      event.preventDefault();
-      const { row, col } = coordsFromElement(event.currentTarget);
-      
-      const existingIndex = selectedPath.findIndex(pos => pos.row === row && pos.col === col);
-      if (existingIndex === selectedPath.length - 1) return;
-
-      if (existingIndex !== -1) {
-        if (existingIndex === selectedPath.length - 2) {
-          selectedPath.pop();
-          renderBoard();
-        }
-        return;
-      }
-
-      const last = selectedPath[selectedPath.length - 1];
-      if (Math.abs(last.row - row) <= 1 && Math.abs(last.col - col) <= 1) {
-        selectedPath.push({ row, col });
-        renderBoard();
-      }
-    }
-
-    function getCurrentWord() {
-      return selectedPath.map(pos => board[pos.row][pos.col]).join('').toLowerCase();
-    }
-
-    function updateCurrentWord() {
-      const word = getCurrentWord();
-      currentWordEl.textContent = word ? word.toUpperCase() : 'Drag letters to build a word';
-    }
-
-    function showMessage(text, good = true) {
-      messageEl.textContent = text;
-      messageEl.className = 'message ' + (good ? 'good' : 'bad');
-    }
-
-    function clearMessage() {
-      messageEl.textContent = '';
-      messageEl.className = 'message';
-    }
-
-    function clearSelection() {
-      selectedPath = [];
-      renderBoard();
-    }
-
-    function formatTime(seconds) {
-      const mins = Math.floor(seconds / 60);
-      const secs = seconds % 60;
-      return `${mins}:${String(secs).padStart(2, '0')}`;
-    }
-
-    function updateStats() {
-      timeDisplayEl.textContent = formatTime(timeLeft);
-      wordsDisplayEl.textContent = String(foundWords.size);
-      scoreDisplayEl.textContent = String(score);
-      bestDisplayEl.textContent = String(bestWords);
-    }
-
-    // 2. SCORING: 1 POINT PER WORD
-    function scoreWord(word) {
-      return 1; 
-    }
-
-    function addWordToList(word) {
-      const li = document.createElement('li');
-      li.textContent = word;
-      wordListEl.prepend(li);
+        });
+      });
+      let word = selectedPath.map(p => board[p.r][p.c]).join('');
+      currentWordEl.textContent = word || 'Select Letters';
     }
 
     function submitWord() {
-      if (!gameActive) return;
-      const word = getCurrentWord();
-      if (!word) return;
-
-      if (!DICTIONARY.has(word)) {
-        showMessage('Not in dictionary.', false);
-        clearSelection();
-        return;
+      let word = selectedPath.map(p => board[p.r][p.c]).join('').toLowerCase();
+      if (word.length >= 3 && DICTIONARY.has(word) && !foundWords.has(word)) {
+        foundWords.add(word);
+        score++;
+        const li = document.createElement('li'); li.textContent = word.toUpperCase();
+        wordListEl.prepend(li);
+        messageEl.textContent = "Great!";
+        wordsDisplayEl.textContent = foundWords.size;
+        scoreDisplayEl.textContent = score;
+      } else {
+        messageEl.textContent = "Try again!";
       }
-      if (foundWords.has(word)) {
-        showMessage('Already found.', false);
-        clearSelection();
-        return;
-      }
-
-      const gained = scoreWord(word);
-      foundWords.add(word);
-      score += gained;
-      addWordToList(word);
-      showMessage(`Nice! ${word.toUpperCase()} (+${gained})`, true);
-
-      // Remove and refill tiles
-      selectedPath.forEach(({ row, col }) => { board[row][col] = null; });
-      refillBoard();
-      clearSelection();
-      updateStats();
+      selectedPath = [];
+      renderBoard();
     }
 
-    function refillBoard() {
-      for (let col = 0; col < BOARD_SIZE; col++) {
-        const existing = [];
-        for (let row = BOARD_SIZE - 1; row >= 0; row--) {
-          if (board[row][col] !== null) existing.push(board[row][col]);
-        }
-        let fillRow = BOARD_SIZE - 1;
-        for (const letter of existing) { board[fillRow][col] = letter; fillRow--; }
-        while (fillRow >= 0) { board[fillRow][col] = randomLetter(); fillRow--; }
-      }
-    }
+    document.onpointerup = () => { if(pointerDown) { submitWord(); pointerDown = false; }};
 
-    function shuffleBoard() {
-      if (!gameActive) return;
-      const letters = board.flat();
-      for (let i = letters.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [letters[i], letters[j]] = [letters[j], letters[i]];
-      }
-      let idx = 0;
-      for (let row = 0; row < BOARD_SIZE; row++) {
-        for (let col = 0; col < BOARD_SIZE; col++) { board[row][col] = letters[idx++]; }
-      }
-      clearSelection();
-      showMessage('Letters shuffled!', true);
-    }
-
-    function todayKey() { return new Date().toISOString().slice(0, 10); }
-
-    function getTodayScores() {
-      const today = todayKey();
-      const storedDate = localStorage.getItem(TODAY_DATE_KEY);
-      if (storedDate !== today) {
-        localStorage.setItem(TODAY_DATE_KEY, today);
-        const fresh = [5, 7, 9, 10, 12, 13, 15, 17, 18, 20, 22, 24];
-        localStorage.setItem(TODAY_SCORES_KEY, JSON.stringify(fresh));
-        return fresh;
-      }
-      try { return JSON.parse(localStorage.getItem(TODAY_SCORES_KEY) || '[]'); } catch { return []; }
-    }
-
-    function saveTodayScore(wordCount) {
-      const scores = getTodayScores();
-      scores.push(wordCount);
-      localStorage.setItem(TODAY_SCORES_KEY, JSON.stringify(scores.slice(-200)));
-      return scores;
-    }
-
-    function percentileForScore(wordCount) {
-      const scores = saveTodayScore(wordCount);
-      if (!scores.length) return 50;
-      const below = scores.filter(score => score <= wordCount).length;
-      return Math.max(1, Math.min(99, Math.round((below / scores.length) * 100)));
-    }
-
-    function endGame() {
-      clearInterval(timerId);
-      gameActive = false;
-      submitBtn.disabled = true;
-      clearBtn.disabled = true;
-      shuffleBtn.disabled = true;
-
-      if (foundWords.size > bestWords) {
-        bestWords = foundWords.size;
-        localStorage.setItem(BEST_WORDS_KEY, String(bestWords));
-      }
-
-      const pct = percentileForScore(foundWords.size);
-      updateStats();
-      finalWordsEl.textContent = `${foundWords.size} ${foundWords.size === 1 ? 'word' : 'words'}`;
-      finalScoreEl.textContent = String(score);
-      finalPercentileEl.textContent = `${pct}%`;
-      finalBestEl.textContent = String(bestWords);
-      overlayEl.classList.add('show');
-    }
-
-    function startTimer() {
-      clearInterval(timerId);
+    function startNewGame() {
+      foundWords = new Set(); score = 0; timeLeft = 90; wordListEl.innerHTML = '';
+      wordsDisplayEl.textContent = '0'; scoreDisplayEl.textContent = '0';
+      gameActive = true; buildBoard(); renderBoard();
+      if(timerId) clearInterval(timerId);
       timerId = setInterval(() => {
-        timeLeft--;
-        updateStats();
-        if (timeLeft <= 0) endGame();
+        timeLeft--; timeDisplayEl.textContent = `0:${timeLeft.toString().padStart(2,'0')}`;
+        if(timeLeft <= 0) { clearInterval(timerId); gameActive = false; alert("Time's Up!"); }
       }, 1000);
     }
 
-    function startNewGame() {
-      clearInterval(timerId);
-      buildBoard();
-      selectedPath = [];
-      foundWords = new Set();
-      score = 0;
-      timeLeft = ROUND_SECONDS;
-      pointerDown = false;
-      gameActive = true;
-      wordListEl.innerHTML = '';
-      clearMessage();
-      overlayEl.classList.remove('show');
-      submitBtn.disabled = false;
-      clearBtn.disabled = false;
-      shuffleBtn.disabled = false;
-      renderBoard();
-      updateStats();
-      startTimer();
-    }
-
-    // AUTO-SUBMIT on Pointer Up
-    document.addEventListener('pointerup', () => {
-      if (pointerDown && gameActive) {
-        submitWord();
-      }
-      pointerDown = false;
-    });
-
-    document.addEventListener('pointercancel', () => { pointerDown = false; });
-
-    submitBtn.addEventListener('click', submitWord);
-    clearBtn.addEventListener('click', () => { clearSelection(); clearMessage(); });
-    shuffleBtn.addEventListener('click', shuffleBoard);
-    newGameBtn.addEventListener('click', startNewGame);
-    playAgainBtn.addEventListener('click', startNewGame);
-
-    // Initial load
+    shuffleBtn.onclick = () => { buildBoard(); renderBoard(); };
+    newGameBtn.onclick = startNewGame;
     loadWords();
   </script>
 </body>
