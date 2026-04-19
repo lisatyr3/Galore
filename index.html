@@ -102,16 +102,16 @@
 </div>
 
 <script>
-// Huge dictionary loaded from your GitHub repo
+// Load huge dictionary directly from GitHub (more reliable)
 let DICT = new Set();
 
 async function loadDictionary() {
   try {
-    // Using the direct raw GitHub URL (most reliable for large files)
-    const res = await fetch('https://raw.githubusercontent.com/lisatyr3/lisatyr3.github.io/main/words.txt');
+    const url = 'https://raw.githubusercontent.com/lisatyr3/lisatyr3.github.io/main/words.txt';
+    const res = await fetch(url);
     
     if (!res.ok) {
-      throw new Error(`HTTP error! Status: ${res.status}`);
+      throw new Error(`Failed to fetch: ${res.status} ${res.statusText}`);
     }
     
     const text = await res.text();
@@ -121,17 +121,14 @@ async function loadDictionary() {
           .filter(w => w.length >= 3 && /^[a-z]+$/.test(w))
     );
     
-    console.log(`✅ Dictionary loaded successfully! Total words: ${DICT.size}`);
+    console.log(`✅ Dictionary loaded! Total words: ${DICT.size}`);
     
-    if (DICT.size < 100000) {
-      console.warn("Warning: Dictionary seems smaller than expected");
-    }
-    
-    // Start the game once dictionary is ready
+    // Start the game
     resetGame();
   } catch (e) {
-    console.error("Failed to load words.txt:", e);
-    document.getElementById('msg').textContent = "Dictionary failed to load - check console";
+    console.error("Dictionary load failed:", e);
+    document.getElementById('msg').innerHTML = 
+      'Dictionary failed to load.<br>Check console (F12) for details.';
     document.getElementById('msg').style.color = "red";
   }
 }
@@ -166,7 +163,6 @@ function handleInteraction(e) {
   if (target && target.classList.contains('tile')) {
     const idx = target.dataset.index;
     if (!activePath.includes(idx)) {
-      // Adjacency check (allows diagonal too)
       if (activePath.length > 0) {
         const lastIdx = parseInt(activePath[activePath.length - 1]);
         const currIdx = parseInt(idx);
@@ -215,12 +211,10 @@ function cleanup() {
   document.querySelectorAll('.tile').forEach(t => t.classList.remove('active'));
   activePath = [];
   document.getElementById('tray').textContent = "DRAG TO CONNECT";
-  setTimeout(() => { 
-    document.getElementById('msg').textContent = ""; 
-  }, 1200);
+  setTimeout(() => { document.getElementById('msg').textContent = ""; }, 1500);
 }
 
-// Event Listeners for drag
+// Drag event listeners
 window.addEventListener('mousedown', () => isDragging = true);
 window.addEventListener('touchstart', () => isDragging = true);
 window.addEventListener('mousemove', handleInteraction);
@@ -253,7 +247,7 @@ function startTimer() {
   }, 1000);
 }
 
-// Start everything
+// Start the app
 loadDictionary();
 </script>
 </body>
