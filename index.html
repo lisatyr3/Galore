@@ -16,21 +16,22 @@
     * { box-sizing: border-box; touch-action: none; }
     body {
       margin: 0;
-      font-family: sans-serif;
+      font-family: system-ui, -apple-system, sans-serif;
       background: linear-gradient(135deg, #fffbe2, #ffe8f6, #e7f8ff);
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
       padding: 10px;
-      overflow: hidden;
+      overflow-y: auto;
     }
     .wrap {
       width: 100%;
-      max-width: 620px;
+      max-width: 480px;
       display: flex;
       flex-direction: column;
       gap: 12px;
+      padding: 10px 0;
     }
     .stats {
       display: flex;
@@ -38,32 +39,32 @@
       background: white;
       padding: 14px 20px;
       border-radius: 20px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
       font-weight: bold;
       font-size: 1.15rem;
     }
     .grid {
       display: grid;
       grid-template-columns: repeat(6, 1fr);
-      gap: 9px;
+      gap: 8px;
       background: white;
-      padding: 14px;
+      padding: 12px;
       border-radius: 20px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
     }
     .tile {
       aspect-ratio: 1/1;
       background: #ffffff;
-      border: 3px solid #e0e0e0;
-      border-radius: 14px;
+      border: 3px solid #e2e8f0;
+      border-radius: 12px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.85rem;
+      font-size: 1.6rem;
       font-weight: 900;
       color: var(--ink);
-      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-      transition: all 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+      transition: all 0.15s ease;
       user-select: none;
     }
     .tile.active {
@@ -71,19 +72,19 @@
       color: white;
       border-color: #f3a61c;
       transform: scale(0.9);
-      box-shadow: 0 8px 16px rgba(255, 191, 63, 0.5);
     }
     .current-word-display {
       background: white;
-      padding: 16px;
+      padding: 14px;
       text-align: center;
       border-radius: 20px;
-      font-size: 1.45rem;
+      font-size: 1.3rem;
       font-weight: 900;
-      min-height: 58px;
-      letter-spacing: 4px;
+      min-height: 52px;
+      letter-spacing: 2px;
       color: var(--blue);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+      text-transform: uppercase;
     }
     .controls {
       display: flex;
@@ -91,55 +92,79 @@
     }
     .btn {
       flex: 1;
-      padding: 16px;
+      padding: 14px;
       border: none;
       border-radius: 20px;
       color: white;
       font-weight: bold;
-      font-size: 1.15rem;
+      font-size: 1.05rem;
       cursor: pointer;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-      transition: all 0.2s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      transition: all 0.1s;
     }
-    .btn:active { transform: scale(0.96); }
+    .btn:active { transform: scale(0.97); }
     .btn-shuffle { background: var(--purple); }
     .btn-new { background: var(--pink); }
-    #msg { 
+    
+    #msg {  
       text-align: center; 
       font-weight: bold; 
-      font-size: 1.15rem;
-      min-height: 30px;
-      margin-top: 4px;
+      font-size: 1.1rem;
+      min-height: 26px;
     }
-    .best-score {
+    
+    /* Leaderboard Styles */
+    .leaderboard-box {
+      background: white;
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+    }
+    .leaderboard-title {
+      margin: 0 0 10px 0;
+      font-size: 1.1rem;
+      color: var(--ink);
+      font-weight: bold;
       text-align: center;
-      font-size: 1rem;
-      color: #555;
-      margin-top: 6px;
+      border-bottom: 2px solid #f3f4f4;
+      padding-bottom: 6px;
     }
+    .leaderboard-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 8px;
+      font-size: 0.95rem;
+      border-radius: 8px;
+    }
+    .leaderboard-row:nth-child(even) { background: #fafafa; }
+    .leaderboard-row.highlight { background: #fff4d4; font-weight: bold; }
   </style>
 </head>
 <body>
 <div class="wrap">
   <div class="stats">
     <div>Time: <span id="timer">1:30</span></div>
-    <div>Words: <span id="wordCount">0</span></div>
+    <div>Score: <span id="scoreDisplay">0</span></div>
   </div>
   
   <div class="current-word-display" id="tray">DRAG TO FORM WORDS</div>
   <div class="grid" id="grid"></div>
   
   <div id="msg"></div>
-  <div class="best-score">Best this session: <span id="bestScore">0</span></div>
 
   <div class="controls">
     <button class="btn btn-shuffle" onclick="shuffleBoard()">Shuffle Board</button>
     <button class="btn btn-new" onclick="resetGame()">New Game</button>
   </div>
+
+  <!-- Leaderboard Placement Layer -->
+  <div class="leaderboard-box">
+    <div class="leaderboard-title">🏆 Today's Top Scores</div>
+    <div id="leaderboardContent"></div>
+  </div>
 </div>
 
 <script>
-// Balanced letter frequencies
 const TILES = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIJKLLLLMMNNNNNNOOOPPPQRRRRRRSSSSTTTTTTUUUVVWWXXYYYZ".split('');
 
 let DICT = new Set();
@@ -148,9 +173,11 @@ let foundWords = new Set();
 let isDragging = false;
 let gameActive = false;
 let timeLeft = 90;
+let timerInterval = null;
 let boardLetters = [];
-let bestScore = 0;
+let currentScore = 0;
 
+// Load Word List
 async function loadDictionary() {
   try {
     const res = await fetch('https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt');
@@ -162,11 +189,11 @@ async function loadDictionary() {
           .map(w => w.trim().toLowerCase())
           .filter(w => w.length >= 3 && /^[a-z]+$/.test(w))
     );
-    console.log(`✅ Dictionary loaded! Total words: ${DICT.size}`);
+    loadLeaderboard();
     resetGame();
   } catch (e) {
-    console.error("Dictionary load failed:", e);
-    document.getElementById('msg').textContent = "Word list failed to load.";
+    console.error(e);
+    document.getElementById('msg').textContent = "Failed loading words.";
   }
 }
 
@@ -189,16 +216,14 @@ function createBoard() {
 
 function shuffleBoard() {
   if (!gameActive) return;
-  
   const tiles = document.querySelectorAll('.tile');
-  tiles.forEach(t => t.style.transform = 'rotate(12deg) scale(0.88)');
+  tiles.forEach(t => t.style.transform = 'scale(0.85)');
   
   setTimeout(() => {
     createBoard();
     activePath = [];
     document.getElementById('tray').textContent = "DRAG TO FORM WORDS";
-    tiles.forEach(t => t.style.transform = '');
-  }, 280);
+  }, 200);
 }
 
 function handleInteraction(e) {
@@ -229,6 +254,14 @@ function updateTray() {
   document.getElementById('tray').textContent = word;
 }
 
+// Calculate strategic scoring jumps based on length criteria
+function calculatePoints(wordLength) {
+  if (wordLength === 3) return 100;
+  if (wordLength === 4) return 200;
+  if (wordLength === 5) return 400;
+  return 800; // 6+ letters gets max points rewards
+}
+
 function submitWord() {
   const word = document.getElementById('tray').textContent.toLowerCase().trim();
   const msg = document.getElementById('msg');
@@ -240,29 +273,34 @@ function submitWord() {
 
   if (DICT.has(word) && !foundWords.has(word)) {
     foundWords.add(word);
-    const count = foundWords.size;
-    document.getElementById('wordCount').textContent = count;
     
-    msg.textContent = `NICE! + ${word.toUpperCase()}`;
-    msg.style.color = "var(--green)";
+    // Add Points and display
+    const pointsEarned = calculatePoints(word.length);
+    currentScore += pointsEarned;
+    document.getElementById('scoreDisplay').textContent = currentScore;
+    
+    // Grant extra time bonuses for long complex words found
+    if(word.length >= 5) {
+      timeLeft += 5;
+      msg.textContent = `💥 AMAZING! +${pointsEarned} pts (+5s Bonus!)`;
+      msg.style.color = "var(--purple)";
+    } else {
+      msg.textContent = `✨ NICE! +${pointsEarned} pts`;
+      msg.style.color = "var(--green)";
+    }
 
-    // Refill used tiles
+    // Refill letters & fix underlying structural dataset pointer values 
     activePath.forEach(idx => {
-      boardLetters[idx] = TILES[Math.floor(Math.random() * TILES.length)];
+      const newLetter = TILES[Math.floor(Math.random() * TILES.length)];
+      boardLetters[idx] = newLetter; 
       const tile = document.querySelector(`[data-index="${idx}"]`);
-      if (tile) tile.textContent = boardLetters[idx];
+      if (tile) tile.textContent = newLetter;
     });
 
-    // Update best score
-    if (count > bestScore) {
-      bestScore = count;
-      document.getElementById('bestScore').textContent = bestScore;
-    }
   } else {
-    msg.textContent = foundWords.has(word) ? "ALREADY FOUND" : "NOT IN LIST";
+    msg.textContent = foundWords.has(word) ? "ALREADY FOUND" : "NOT A WORD";
     msg.style.color = "var(--pink)";
   }
-  
   cleanup();
 }
 
@@ -270,9 +308,9 @@ function cleanup() {
   document.querySelectorAll('.tile').forEach(t => t.classList.remove('active'));
   activePath = [];
   document.getElementById('tray').textContent = "DRAG TO FORM WORDS";
-  setTimeout(() => msg.textContent = "", 1600);
 }
 
+// Global window pointer interface event capture handlers
 window.addEventListener('mousedown', () => isDragging = true);
 window.addEventListener('touchstart', () => isDragging = true);
 window.addEventListener('mousemove', handleInteraction);
@@ -281,8 +319,11 @@ window.addEventListener('mouseup', () => { if(isDragging){ isDragging=false; sub
 window.addEventListener('touchend', () => { if(isDragging){ isDragging=false; submitWord(); }});
 
 function resetGame() {
+  if(timerInterval) clearInterval(timerInterval);
   foundWords.clear();
-  document.getElementById('wordCount').textContent = '0';
+  currentScore = 0;
+  document.getElementById('scoreDisplay').textContent = '0';
+  document.getElementById('msg').textContent = '';
   timeLeft = 90;
   gameActive = true;
   createBoard();
@@ -291,33 +332,70 @@ function resetGame() {
 
 function startTimer() {
   const timerDisplay = document.getElementById('timer');
-  const id = setInterval(() => {
+  timerInterval = setInterval(() => {
     timeLeft--;
     let m = Math.floor(timeLeft / 60);
     let s = timeLeft % 60;
     timerDisplay.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
     
-    if (timeLeft <= 0 || !gameActive) {
-      clearInterval(id);
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
       gameActive = false;
-      
-      const finalScore = foundWords.size;
-      let message = `Time's up! You found ${finalScore} words.`;
-      
-      if (finalScore > bestScore) {
-        bestScore = finalScore;
-        document.getElementById('bestScore').textContent = bestScore;
-        message += `\n\nNew personal best! 🎉`;
-      } else if (bestScore > 0) {
-        message += `\n\nYour best this session: ${bestScore}`;
-      }
-      
-      alert(message);
+      checkLeaderboardEligibility(currentScore);
     }
   }, 1000);
 }
 
-// Initialize
+/* LEADERBOARD ARCHITECTURE SYSTEM */
+function loadLeaderboard() {
+  let scores = JSON.parse(localStorage.getItem('word_galore_scores'));
+  if (!scores) {
+    // Standard mock list default base targets
+    scores = [
+      { name: "WordMaster99", score: 2500 },
+      { name: "TileFinder", score: 1800 },
+      { name: "LexisRex", score: 1200 },
+      { name: "BoggleBot", score: 800 },
+      { name: "AlphaGamer", score: 400 }
+    ];
+    localStorage.setItem('word_galore_scores', JSON.stringify(scores));
+  }
+  renderLeaderboard(scores);
+}
+
+function renderLeaderboard(scores, highlightIndex = -1) {
+  const container = document.getElementById('leaderboardContent');
+  container.innerHTML = "";
+  scores.sort((a,b) => b.score - a.score).slice(0, 5).forEach((entry, idx) => {
+    const row = document.createElement('div');
+    row.className = `leaderboard-row ${idx === highlightIndex ? 'highlight' : ''}`;
+    row.innerHTML = `<span>${idx + 1}. ${entry.name}</span><span>${entry.score} pts</span>`;
+    container.appendChild(row);
+  });
+}
+
+function checkLeaderboardEligibility(finalScore) {
+  let scores = JSON.parse(localStorage.getItem('word_galore_scores')) || [];
+  scores.sort((a,b) => b.score - a.score);
+  
+  // Is it higher than the 5th place entry score value?
+  if (scores.length < 5 || finalScore > scores[4].score) {
+    setTimeout(() => {
+      const name = prompt(`🎉 Top 5 Score! You earned ${finalScore} points.\nEnter your name for the board:`) || "Anonymous";
+      scores.push({ name: name.substring(0, 15), score: finalScore });
+      scores.sort((a,b) => b.score - a.score);
+      scores = scores.slice(0, 5); // Trim to absolute top 5 list size
+      localStorage.setItem('word_galore_scores', JSON.stringify(scores));
+      
+      const newHighlightIdx = scores.findIndex(e => e.score === finalScore && e.name === name.substring(0, 15));
+      renderLeaderboard(scores, newHighlightIdx);
+    }, 300);
+  } else {
+    alert(`Time's Up! Final Score: ${finalScore} points.\nTry again to beat the leader board!`);
+  }
+}
+
+// Initial running load configuration sequence
 loadDictionary();
 </script>
 </body>
