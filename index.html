@@ -113,7 +113,6 @@
       min-height: 26px;
     }
     
-    /* Leaderboard Styles */
     .leaderboard-box {
       background: white;
       border-radius: 20px;
@@ -138,9 +137,62 @@
     }
     .leaderboard-row:nth-child(even) { background: #fafafa; }
     .leaderboard-row.highlight { background: #fff4d4; font-weight: bold; }
+
+    /* =======================================
+       CUSTOM POPUP MODAL STYLES 
+       ======================================= */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(37, 50, 74, 0.6);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      padding: 24px;
+      border-radius: 24px;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    @keyframes popIn {
+      from { transform: scale(0.8); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+    .modal-content h3 { margin: 0 0 10px; color: var(--ink); font-size: 1.4rem; }
+    .modal-content p { margin: 0 0 20px; color: #555; font-size: 1rem; }
+    .modal-input {
+      width: 100%;
+      padding: 12px 16px;
+      font-size: 1.1rem;
+      border: 2px solid #e2e8f0;
+      border-radius: 14px;
+      margin-bottom: 16px;
+      text-align: center;
+      outline: none;
+    }
+    .modal-input:focus { border-color: var(--blue); }
+    .modal-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--green);
+      color: white;
+      border: none;
+      border-radius: 14px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
+
 <div class="wrap">
   <div class="stats">
     <div>Time: <span id="timer">1:30</span></div>
@@ -157,10 +209,20 @@
     <button class="btn btn-new" onclick="resetGame()">New Game</button>
   </div>
 
-  <!-- Leaderboard Placement Layer -->
   <div class="leaderboard-box">
     <div class="leaderboard-title">🏆 Today's Top Scores</div>
     <div id="leaderboardContent"></div>
+  </div>
+</div>
+
+<!-- Custom High Score Prompt Screen Modal Element -->
+<div class="modal-overlay" id="scoreModal">
+  <div class="modal-content">
+    <h3 id="modalTitle">🎉 New High Score!</h3>
+    <p id="modalScoreText">You earned 0 points.</p>
+    <!-- Normal touch actions re-enabled inside input field frame boundary -->
+    <input type="text" id="playerNameInput" class="modal-input" placeholder="Your Name" maxlength="12" style="touch-action: auto;">
+    <button class="modal-btn" onclick="submitName()">Save Score</button>
   </div>
 </div>
 
@@ -177,7 +239,6 @@ let timerInterval = null;
 let boardLetters = [];
 let currentScore = 0;
 
-// Load Word List
 async function loadDictionary() {
   try {
     const res = await fetch('https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt');
@@ -254,12 +315,11 @@ function updateTray() {
   document.getElementById('tray').textContent = word;
 }
 
-// Calculate strategic scoring jumps based on length criteria
 function calculatePoints(wordLength) {
   if (wordLength === 3) return 100;
   if (wordLength === 4) return 200;
   if (wordLength === 5) return 400;
-  return 800; // 6+ letters gets max points rewards
+  return 800;
 }
 
 function submitWord() {
@@ -274,12 +334,10 @@ function submitWord() {
   if (DICT.has(word) && !foundWords.has(word)) {
     foundWords.add(word);
     
-    // Add Points and display
     const pointsEarned = calculatePoints(word.length);
     currentScore += pointsEarned;
     document.getElementById('scoreDisplay').textContent = currentScore;
     
-    // Grant extra time bonuses for long complex words found
     if(word.length >= 5) {
       timeLeft += 5;
       msg.textContent = `💥 AMAZING! +${pointsEarned} pts (+5s Bonus!)`;
@@ -289,7 +347,6 @@ function submitWord() {
       msg.style.color = "var(--green)";
     }
 
-    // Refill letters & fix underlying structural dataset pointer values 
     activePath.forEach(idx => {
       const newLetter = TILES[Math.floor(Math.random() * TILES.length)];
       boardLetters[idx] = newLetter; 
@@ -310,7 +367,6 @@ function cleanup() {
   document.getElementById('tray').textContent = "DRAG TO FORM WORDS";
 }
 
-// Global window pointer interface event capture handlers
 window.addEventListener('mousedown', () => isDragging = true);
 window.addEventListener('touchstart', () => isDragging = true);
 window.addEventListener('mousemove', handleInteraction);
@@ -346,11 +402,9 @@ function startTimer() {
   }, 1000);
 }
 
-/* LEADERBOARD ARCHITECTURE SYSTEM */
 function loadLeaderboard() {
   let scores = JSON.parse(localStorage.getItem('word_galore_scores'));
   if (!scores) {
-    // Standard mock list default base targets
     scores = [
       { name: "WordMaster99", score: 2500 },
       { name: "TileFinder", score: 1800 },
@@ -374,28 +428,55 @@ function renderLeaderboard(scores, highlightIndex = -1) {
   });
 }
 
+/* ===================================================================
+   MODAL DRIVEN HIGH SCORE RESOLUTION
+   =================================================================== */
 function checkLeaderboardEligibility(finalScore) {
   let scores = JSON.parse(localStorage.getItem('word_galore_scores')) || [];
   scores.sort((a,b) => b.score - a.score);
   
-  // Is it higher than the 5th place entry score value?
-  if (scores.length < 5 || finalScore > scores[4].score) {
-    setTimeout(() => {
-      const name = prompt(`🎉 Top 5 Score! You earned ${finalScore} points.\nEnter your name for the board:`) || "Anonymous";
-      scores.push({ name: name.substring(0, 15), score: finalScore });
-      scores.sort((a,b) => b.score - a.score);
-      scores = scores.slice(0, 5); // Trim to absolute top 5 list size
-      localStorage.setItem('word_galore_scores', JSON.stringify(scores));
-      
-      const newHighlightIdx = scores.findIndex(e => e.score === finalScore && e.name === name.substring(0, 15));
-      renderLeaderboard(scores, newHighlightIdx);
-    }, 300);
+  const isTopScore = scores.length < 5 || finalScore > scores[4].score;
+  
+  // Set up modal copy elements
+  document.getElementById('modalScoreText').textContent = `You scored ${finalScore} points!`;
+  const nameInput = document.getElementById('playerNameInput');
+  
+  if (isTopScore) {
+    document.getElementById('modalTitle').textContent = "🎉 New Top 5 Score!";
+    nameInput.style.display = "block";
+    nameInput.value = "";
   } else {
-    alert(`Time's Up! Final Score: ${finalScore} points.\nTry again to beat the leader board!`);
+    document.getElementById('modalTitle').textContent = "⏰ Time's Up!";
+    nameInput.style.display = "none"; // Hide name box if they didn't qualify
   }
+  
+  // Slide up custom modal overlay layer safely
+  document.getElementById('scoreModal').style.display = "flex";
 }
 
-// Initial running load configuration sequence
+function submitName() {
+  const finalScore = currentScore;
+  let scores = JSON.parse(localStorage.getItem('word_galore_scores')) || [];
+  const nameInput = document.getElementById('playerNameInput');
+  
+  // Only insert data if input window container was visible 
+  if (nameInput.style.display !== "none") {
+    const rawName = nameInput.value.trim();
+    const name = rawName !== "" ? rawName : "Player One";
+    
+    scores.push({ name: name.substring(0, 12), score: finalScore });
+    scores.sort((a,b) => b.score - a.score);
+    scores = scores.slice(0, 5);
+    localStorage.setItem('word_galore_scores', JSON.stringify(scores));
+    
+    const newHighlightIdx = scores.findIndex(e => e.score === finalScore && e.name === name.substring(0, 12));
+    renderLeaderboard(scores, newHighlightIdx);
+  }
+  
+  // Close out frame window box cleanly
+  document.getElementById('scoreModal').style.display = "none";
+}
+
 loadDictionary();
 </script>
 </body>
