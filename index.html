@@ -224,7 +224,7 @@
 
 <script>
 const TILES = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIJKLLLLMMNNNNNNOOOPPPQRRRRRRSSSSTTTTTTUUUVVWWXXYYYZ".split('');
-const API_URL = "https://words-galore-api.lisa-668.workers.dev"; [cite: 1]
+const API_URL = "https://words-galore-api.lisa-668.workers.dev"; 
 
 let DICT = new Set();
 let activePath = [];
@@ -238,251 +238,251 @@ let currentScore = 0;
 
 async function loadDictionary() {
   try {
-    const res = await fetch('https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt'); [cite: 1]
-    if (!res.ok) throw new Error(`HTTP ${res.status}`); [cite: 1]
+    const res = await fetch('https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt');
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
     
-    const text = await res.text(); [cite: 1]
+    const text = await res.text();
     DICT = new Set(
-      text.split('\n') [cite: 1]
-          .map(w => w.trim().toLowerCase()) [cite: 1]
-          .filter(w => w.length >= 3 && /^[a-z]+$/.test(w)) [cite: 1]
+      text.split('\n')
+          .map(w => w.trim().toLowerCase())
+          .filter(w => w.length >= 3 && /^[a-z]+$/.test(w))
     );
     loadLeaderboard();
     resetGame();
   } catch (e) {
     console.error(e);
-    document.getElementById('msg').textContent = "Failed loading words."; [cite: 1]
+    document.getElementById('msg').textContent = "Failed loading words.";
   }
 }
 
 function createBoard() {
-  const grid = document.getElementById('grid'); [cite: 1]
-  grid.innerHTML = ''; [cite: 1]
-  boardLetters = []; [cite: 1]
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  boardLetters = [];
   
   for (let i = 0; i < 36; i++) {
-    const letter = TILES[Math.floor(Math.random() * TILES.length)]; [cite: 1]
-    boardLetters.push(letter); [cite: 1]
+    const letter = TILES[Math.floor(Math.random() * TILES.length)];
+    boardLetters.push(letter);
     
-    const div = document.createElement('div'); [cite: 1]
-    div.className = 'tile'; [cite: 1]
-    div.textContent = letter; [cite: 1]
-    div.dataset.index = i; [cite: 1]
-    grid.appendChild(div); [cite: 1]
+    const div = document.createElement('div');
+    div.className = 'tile';
+    div.textContent = letter;
+    div.dataset.index = i;
+    grid.appendChild(div);
   }
 }
 
 function shuffleBoard() {
-  if (!gameActive) return; [cite: 1]
-  const tiles = document.querySelectorAll('.tile'); [cite: 1]
-  tiles.forEach(t => t.style.transform = 'scale(0.85)'); [cite: 1]
+  if (!gameActive) return;
+  const tiles = document.querySelectorAll('.tile');
+  tiles.forEach(t => t.style.transform = 'scale(0.85)');
   
   setTimeout(() => {
     createBoard();
-    activePath = []; [cite: 1]
-    document.getElementById('tray').textContent = "DRAG TO FORM WORDS"; [cite: 1]
+    activePath = [];
+    document.getElementById('tray').textContent = "DRAG TO FORM WORDS";
   }, 200);
 }
 
 function handleInteraction(e) {
-  if (!gameActive || !isDragging) return; [cite: 1]
+  if (!gameActive || !isDragging) return;
   
-  const x = e.touches ? e.touches[0].clientX : e.clientX; [cite: 1]
-  const y = e.touches ? e.touches[0].clientY : e.clientY; [cite: 1]
-  const target = document.elementFromPoint(x, y); [cite: 1]
+  const x = e.touches ? e.touches[0].clientX : e.clientX;
+  const y = e.touches ? e.touches[0].clientY : e.clientY;
+  const target = document.elementFromPoint(x, y);
   
   if (target && target.classList.contains('tile')) {
-    const idx = parseInt(target.dataset.index); [cite: 1]
-    if (!activePath.includes(idx)) { [cite: 1]
-      if (activePath.length > 0) { [cite: 1]
-        const last = activePath[activePath.length-1]; [cite: 1]
-        const rowDiff = Math.abs(Math.floor(last/6) - Math.floor(idx/6)); [cite: 1]
-        const colDiff = Math.abs((last%6) - (idx%6)); [cite: 1]
-        if (rowDiff > 1 || colDiff > 1) return; [cite: 1]
+    const idx = parseInt(target.dataset.index);
+    if (!activePath.includes(idx)) {
+      if (activePath.length > 0) {
+        const last = activePath[activePath.length-1];
+        const rowDiff = Math.abs(Math.floor(last/6) - Math.floor(idx/6));
+        const colDiff = Math.abs((last%6) - (idx%6));
+        if (rowDiff > 1 || colDiff > 1) return;
       }
-      activePath.push(idx); [cite: 1]
-      target.classList.add('active'); [cite: 1]
+      activePath.push(idx);
+      target.classList.add('active');
       updateTray();
     }
   }
 }
 
 function updateTray() {
-  const word = activePath.map(idx => boardLetters[idx]).join(''); [cite: 1]
-  document.getElementById('tray').textContent = word; [cite: 1]
+  const word = activePath.map(idx => boardLetters[idx]).join('');
+  document.getElementById('tray').textContent = word;
 }
 
 function calculatePoints(wordLength) {
-  if (wordLength === 3) return 100; [cite: 1]
-  if (wordLength === 4) return 200; [cite: 1]
-  if (wordLength === 5) return 400; [cite: 1]
-  return 800; [cite: 1]
+  if (wordLength === 3) return 100;
+  if (wordLength === 4) return 200;
+  if (wordLength === 5) return 400;
+  return 800;
 }
 
 function submitWord() {
-  const word = document.getElementById('tray').textContent.toLowerCase().trim(); [cite: 1]
-  const msg = document.getElementById('msg'); [cite: 1]
+  const word = document.getElementById('tray').textContent.toLowerCase().trim();
+  const msg = document.getElementById('msg');
   
-  if (word.length < 3) { [cite: 1]
+  if (word.length < 3) {
     cleanup();
     return;
   }
 
-  if (DICT.has(word) && !foundWords.has(word)) { [cite: 1]
-    foundWords.add(word); [cite: 1]
+  if (DICT.has(word) && !foundWords.has(word)) {
+    foundWords.add(word);
     
-    const pointsEarned = calculatePoints(word.length); [cite: 1]
-    currentScore += pointsEarned; [cite: 1]
-    document.getElementById('scoreDisplay').textContent = currentScore; [cite: 1]
+    const pointsEarned = calculatePoints(word.length);
+    currentScore += pointsEarned;
+    document.getElementById('scoreDisplay').textContent = currentScore;
     
-    if(word.length >= 5) { [cite: 1]
-      timeLeft += 5; [cite: 1]
-      msg.textContent = `💥 AMAZING! +${pointsEarned} pts (+5s Bonus!)`; [cite: 1]
-      msg.style.color = "var(--purple)"; [cite: 1]
+    if(word.length >= 5) {
+      timeLeft += 5;
+      msg.textContent = `💥 AMAZING! +${pointsEarned} pts (+5s Bonus!)`;
+      msg.style.color = "var(--purple)";
     } else {
-      msg.textContent = `✨ NICE! +${pointsEarned} pts`; [cite: 1]
-      msg.style.color = "var(--green)"; [cite: 1]
+      msg.textContent = `✨ NICE! +${pointsEarned} pts`;
+      msg.style.color = "var(--green)";
     }
 
-    activePath.forEach(idx => { [cite: 1]
-      const newLetter = TILES[Math.floor(Math.random() * TILES.length)]; [cite: 1]
-      boardLetters[idx] = newLetter; [cite: 1]
-      const tile = document.querySelector(`[data-index="${idx}"]`); [cite: 1]
-      if (tile) tile.textContent = newLetter; [cite: 1]
+    activePath.forEach(idx => {
+      const newLetter = TILES[Math.floor(Math.random() * TILES.length)];
+      boardLetters[idx] = newLetter; 
+      const tile = document.querySelector(`[data-index="${idx}"]`);
+      if (tile) tile.textContent = newLetter;
     });
 
   } else {
-    msg.textContent = foundWords.has(word) ? "ALREADY FOUND" : "NOT A WORD"; [cite: 1]
-    msg.style.color = "var(--pink)"; [cite: 1]
+    msg.textContent = foundWords.has(word) ? "ALREADY FOUND" : "NOT A WORD";
+    msg.style.color = "var(--pink)";
   }
   cleanup();
 }
 
 function cleanup() {
-  document.querySelectorAll('.tile').forEach(t => t.classList.remove('active')); [cite: 1]
-  activePath = []; [cite: 1]
-  document.getElementById('tray').textContent = "DRAG TO FORM WORDS"; [cite: 1]
+  document.querySelectorAll('.tile').forEach(t => t.classList.remove('active'));
+  activePath = [];
+  document.getElementById('tray').textContent = "DRAG TO FORM WORDS";
 }
 
-window.addEventListener('mousedown', () => isDragging = true); [cite: 1]
-window.addEventListener('touchstart', () => isDragging = true); [cite: 1]
-window.addEventListener('mousemove', handleInteraction); [cite: 1]
-window.addEventListener('touchmove', handleInteraction); [cite: 1]
-window.addEventListener('mouseup', () => { if(isDragging){ isDragging=false; submitWord(); }}); [cite: 1]
-window.addEventListener('touchend', () => { if(isDragging){ isDragging=false; submitWord(); }}); [cite: 1]
+window.addEventListener('mousedown', () => isDragging = true);
+window.addEventListener('touchstart', () => isDragging = true);
+window.addEventListener('mousemove', handleInteraction);
+window.addEventListener('touchmove', handleInteraction);
+window.addEventListener('mouseup', () => { if(isDragging){ isDragging=false; submitWord(); }});
+window.addEventListener('touchend', () => { if(isDragging){ isDragging=false; submitWord(); }});
 
 function resetGame() {
-  if(timerInterval) clearInterval(timerInterval); [cite: 1]
-  foundWords.clear(); [cite: 1]
-  currentScore = 0; [cite: 1]
-  document.getElementById('scoreDisplay').textContent = '0'; [cite: 1]
-  document.getElementById('msg').textContent = ''; [cite: 1]
-  timeLeft = 90; [cite: 1]
-  gameActive = true; [cite: 1]
+  if(timerInterval) clearInterval(timerInterval);
+  foundWords.clear();
+  currentScore = 0;
+  document.getElementById('scoreDisplay').textContent = '0';
+  document.getElementById('msg').textContent = '';
+  timeLeft = 90;
+  gameActive = true;
   createBoard();
   startTimer();
 }
 
 function startTimer() {
-  const timerDisplay = document.getElementById('timer'); [cite: 1]
+  const timerDisplay = document.getElementById('timer');
   timerInterval = setInterval(() => {
-    timeLeft--; [cite: 1]
-    let m = Math.floor(timeLeft / 60); [cite: 1]
-    let s = timeLeft % 60; [cite: 1]
-    timerDisplay.textContent = `${m}:${s < 10 ? '0' : ''}${s}`; [cite: 1]
+    timeLeft--;
+    let m = Math.floor(timeLeft / 60);
+    let s = timeLeft % 60;
+    timerDisplay.textContent = `${m}:${s < 10 ? '0' : ''}${s}`;
     
-    if (timeLeft <= 0) { [cite: 1]
-      clearInterval(timerInterval); [cite: 1]
-      gameActive = false; [cite: 1]
+    if (timeLeft <= 0) {
+      clearInterval(timerInterval);
+      gameActive = false;
       checkLeaderboardEligibility(currentScore);
     }
   }, 1000);
 }
 
-// FIXED: Changed .slice(0, 5) to .slice(0, 10) so all 10 rows safely print to the screen
 function renderLeaderboard(scores, highlightIndex = -1) {
-  const container = document.getElementById('leaderboardContent'); [cite: 1]
-  container.innerHTML = ""; [cite: 1]
-  scores.sort((a,b) => b.score - a.score).slice(0, 10).forEach((entry, idx) => { [cite: 1]
-    const row = document.createElement('div'); [cite: 1]
-    row.className = `leaderboard-row ${idx === highlightIndex ? 'highlight' : ''}`; [cite: 1]
-    row.innerHTML = `<span>${idx + 1}. ${entry.name}</span><span>${entry.score} pts</span>`; [cite: 1]
-    container.appendChild(row); [cite: 1]
+  const container = document.getElementById('leaderboardContent');
+  container.innerHTML = "";
+  // Changed .slice(0, 5) to .slice(0, 10) so it prints up to 10 lines
+  scores.sort((a,b) => b.score - a.score).slice(0, 10).forEach((entry, idx) => {
+    const row = document.createElement('div');
+    row.className = `leaderboard-row ${idx === highlightIndex ? 'highlight' : ''}`;
+    row.innerHTML = `<span>${idx + 1}. ${entry.name}</span><span>${entry.score} pts</span>`;
+    container.appendChild(row);
   });
 }
 
 async function loadLeaderboard() {
   try {
-    const res = await fetch(API_URL); [cite: 1]
-    const scores = await res.json(); [cite: 1]
+    const res = await fetch(API_URL);
+    const scores = await res.json();
     
-    if (scores.length === 0) { [cite: 1]
+    if (scores.length === 0) {
       renderLeaderboard([
-        { name: "WordMaster99", score: 2500 }, [cite: 1]
-        { name: "TileFinder", score: 1800 }, [cite: 1]
-        { name: "LexisRex", score: 1200 }, [cite: 1]
-        { name: "BoggleBot", score: 800 }, [cite: 1]
-        { name: "AlphaGamer", score: 400 } [cite: 1]
+        { name: "WordMaster99", score: 2500 },
+        { name: "TileFinder", score: 1800 },
+        { name: "LexisRex", score: 1200 },
+        { name: "BoggleBot", score: 800 },
+        { name: "AlphaGamer", score: 400 }
       ]);
     } else {
       renderLeaderboard(scores);
     }
   } catch (e) {
-    console.error("Could not fetch global leaderboard:", e); [cite: 1]
+    console.error("Could not fetch global leaderboard:", e);
   }
 }
 
 async function checkLeaderboardEligibility(finalScore) {
-  document.getElementById('modalScoreText').textContent = `You scored ${finalScore} points!`; [cite: 1]
-  const nameInput = document.getElementById('playerNameInput'); [cite: 1]
+  document.getElementById('modalScoreText').textContent = `You scored ${finalScore} points!`;
+  const nameInput = document.getElementById('playerNameInput');
   
   try {
-    const res = await fetch(API_URL); [cite: 1]
-    const scores = await res.json(); [cite: 1]
+    const res = await fetch(API_URL);
+    const scores = await res.json();
     
     // Checks eligibility against the 10th spot instead of the 5th
-    const isTopScore = scores.length < 10 || finalScore > (scores[9]?.score || 0); [cite: 1]
+    const isTopScore = scores.length < 10 || finalScore > (scores[9]?.score || 0);
     
     if (isTopScore) {
-      document.getElementById('modalTitle').textContent = "🎉 New Global Top 10!"; [cite: 1]
-      nameInput.style.display = "block"; [cite: 1]
-      nameInput.value = ""; [cite: 1]
+      document.getElementById('modalTitle').textContent = "🎉 New Global Top 10!";
+      nameInput.style.display = "block";
+      nameInput.value = "";
     } else {
-      document.getElementById('modalTitle').textContent = "⏰ Time's Up!"; [cite: 1]
-      nameInput.style.display = "none"; [cite: 1]
+      document.getElementById('modalTitle').textContent = "⏰ Time's Up!";
+      nameInput.style.display = "none";
     }
   } catch(e) {
-    document.getElementById('modalTitle').textContent = "⏰ Time's Up!"; [cite: 1]
-    nameInput.style.display = "none"; [cite: 1]
+    document.getElementById('modalTitle').textContent = "⏰ Time's Up!";
+    nameInput.style.display = "none";
   }
   
-  document.getElementById('scoreModal').style.display = "flex"; [cite: 1]
+  document.getElementById('scoreModal').style.display = "flex";
 }
 
 async function submitName() {
-  const finalScore = currentScore; [cite: 1]
-  const nameInput = document.getElementById('playerNameInput'); [cite: 1]
+  const finalScore = currentScore;
+  const nameInput = document.getElementById('playerNameInput');
   
-  if (nameInput.style.display !== "none") { [cite: 1]
-    const rawName = nameInput.value.trim(); [cite: 1]
-    const name = rawName !== "" ? rawName : "Player One"; [cite: 1]
+  if (nameInput.style.display !== "none") {
+    const rawName = nameInput.value.trim();
+    const name = rawName !== "" ? rawName : "Player One";
     
     try {
-      const res = await fetch(API_URL, { [cite: 1]
-        method: "POST", [cite: 1]
-        headers: { "Content-Type": "application/json" }, [cite: 1]
-        body: JSON.stringify({ name: name, score: finalScore }) [cite: 1]
+      const res = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: name, score: finalScore })
       });
-      const updatedScores = await res.json(); [cite: 1]
+      const updatedScores = await res.json();
       
-      const highlightIdx = updatedScores.findIndex(e => e.score === finalScore && e.name === name.substring(0, 12)); [cite: 1]
+      const highlightIdx = updatedScores.findIndex(e => e.score === finalScore && e.name === name.substring(0, 12));
       renderLeaderboard(updatedScores, highlightIdx);
     } catch(e) {
-      console.error("Failed saving score online:", e); [cite: 1]
+      console.error("Failed saving score online:", e);
     }
   }
   
-  document.getElementById('scoreModal').style.display = "none"; [cite: 1]
+  document.getElementById('scoreModal').style.display = "none";
 }
 
 loadDictionary();
