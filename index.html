@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Words Galore</title>
   <style>
     :root {
@@ -13,7 +13,10 @@
       --blue: #6e7ff2;
       --purple: #9b59b6;
     }
-    * { box-sizing: border-box; touch-action: none; }
+    /* FIXED: Specific touch-action applied ONLY to the game grid so your word dragging stays perfect, but the rest of the page can scroll */
+    * { box-sizing: border-box; }
+    .grid { touch-action: none; }
+    
     body {
       margin: 0;
       font-family: system-ui, -apple-system, sans-serif;
@@ -23,7 +26,9 @@
       align-items: center;
       min-height: 100vh;
       padding: 10px;
-      overflow-y: auto;
+      /* FIXED: Changed to allow smooth vertical scrolling on small phone screens */
+      overflow-y: auto; 
+      -webkit-overflow-scrolling: touch;
     }
     .wrap {
       width: 100%;
@@ -118,6 +123,8 @@
       border-radius: 20px;
       padding: 16px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+      /* FIXED: Added a tiny bit of bottom margin so it doesn't hug the very edge of the phone screen when you scroll down */
+      margin-bottom: 20px; 
     }
     .leaderboard-title {
       margin: 0 0 10px 0;
@@ -224,7 +231,7 @@
 
 <script>
 const TILES = "AAAAAAAAABBCCDDDDEEEEEEEEEEEEFFGGGHHIIIIIIJKLLLLMMNNNNNNOOOPPPQRRRRRRSSSSTTTTTTUUUVVWWXXYYYZ".split('');
-const API_URL = "https://words-galore-api.lisa-668.workers.dev"; 
+const API_URL = "https://words-galore-api.lisa-668.workers.dev";
 
 let DICT = new Set();
 let activePath = [];
@@ -346,7 +353,7 @@ function submitWord() {
 
     activePath.forEach(idx => {
       const newLetter = TILES[Math.floor(Math.random() * TILES.length)];
-      boardLetters[idx] = newLetter; 
+      boardLetters[idx] = newLetter;
       const tile = document.querySelector(`[data-index="${idx}"]`);
       if (tile) tile.textContent = newLetter;
     });
@@ -402,7 +409,6 @@ function startTimer() {
 function renderLeaderboard(scores, highlightIndex = -1) {
   const container = document.getElementById('leaderboardContent');
   container.innerHTML = "";
-  // Changed .slice(0, 5) to .slice(0, 10) so it prints up to 10 lines
   scores.sort((a,b) => b.score - a.score).slice(0, 10).forEach((entry, idx) => {
     const row = document.createElement('div');
     row.className = `leaderboard-row ${idx === highlightIndex ? 'highlight' : ''}`;
@@ -440,7 +446,6 @@ async function checkLeaderboardEligibility(finalScore) {
     const res = await fetch(API_URL);
     const scores = await res.json();
     
-    // Checks eligibility against the 10th spot instead of the 5th
     const isTopScore = scores.length < 10 || finalScore > (scores[9]?.score || 0);
     
     if (isTopScore) {
