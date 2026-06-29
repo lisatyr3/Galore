@@ -123,7 +123,6 @@
       border-radius: 20px;
       padding: 16px;
       box-shadow: 0 6px 20px rgba(0,0,0,0.06);
-      /* FIXED: Added a tiny bit of bottom margin so it doesn't hug the very edge of the phone screen when you scroll down */
       margin-bottom: 20px; 
     }
     .leaderboard-title {
@@ -145,7 +144,6 @@
     .leaderboard-row:nth-child(even) { background: #fafafa; }
     .leaderboard-row.highlight { background: #fff4d4; font-weight: bold; }
 
-    /* Custom Popup Modal Styles */
     .modal-overlay {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
@@ -215,7 +213,7 @@
   </div>
 
   <div class="leaderboard-box">
-    <div class="leaderboard-title">🏆 Today's Top Scores</div>
+    <div class="leaderboard-title">🏆 This Week's Top Scores</div>
     <div id="leaderboardContent"></div>
   </div>
 </div>
@@ -242,6 +240,24 @@ let timeLeft = 90;
 let timerInterval = null;
 let boardLetters = [];
 let currentScore = 0;
+
+// HELPER: Generates a stable unique token matching the current ISO calendar week (resets Monday at 00:00 local time)
+function getWeeklyResetKey() {
+  const now = new Date();
+  const day = now.getDay();
+  // Adjust to make Monday the start of the week line (0) instead of Sunday (6)
+  const distanceToMonday = day === 0 ? -6 : 1 - day;
+  const mondayDate = new Date(now);
+  mondayDate.setDate(now.getDate() + distanceToMonday);
+  
+  const year = mondayDate.getFullYear();
+  // Calculate standard week number
+  const startOfYear = new Date(year, 0, 1);
+  const days = Math.floor((mondayDate - startOfYear) / (24 * 60 * 60 * 1000));
+  const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+  
+  return `${year}-W${weekNumber}`;
+}
 
 async function loadDictionary() {
   try {
@@ -419,7 +435,8 @@ function renderLeaderboard(scores, highlightIndex = -1) {
 
 async function loadLeaderboard() {
   try {
-    const res = await fetch(API_URL);
+    // Append the dynamic weekly parameters onto the API URL string request
+    const res = await fetch(`${API_URL}?week=${getWeeklyResetKey()}`);
     const scores = await res.json();
     
     if (scores.length === 0) {
@@ -443,13 +460,13 @@ async function checkLeaderboardEligibility(finalScore) {
   const nameInput = document.getElementById('playerNameInput');
   
   try {
-    const res = await fetch(API_URL);
+    const res = await fetch(`${API_URL}?week=${getWeeklyResetKey()}`);
     const scores = await res.json();
     
     const isTopScore = scores.length < 10 || finalScore > (scores[9]?.score || 0);
     
     if (isTopScore) {
-      document.getElementById('modalTitle').textContent = "🎉 New Global Top 10!";
+      document.getElementById('modalTitle').textContent = "🎉 New Weekly Top 10!";
       nameInput.style.display = "block";
       nameInput.value = "";
     } else {
@@ -473,7 +490,7 @@ async function submitName() {
     const name = rawName !== "" ? rawName : "Player One";
     
     try {
-      const res = await fetch(API_URL, {
+      const res = await fetch(`${API_URL}?week=${getWeeklyResetKey()}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name: name, score: finalScore })
